@@ -1,23 +1,21 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { globalIgnores } from 'eslint/config'
+/**
+ * Copyright (c) 2025 Bytedance Ltd. and/or its affiliates
+ * SPDX-License-Identifier: MIT
+ */
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
-    ],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+const { defineConfig } = require('@flowgram.ai/eslint-config');
+
+module.exports = defineConfig({
+  preset: 'web',
+  packageRoot: __dirname,
+  rules: {
+    'no-console': 'off',
+    'react/prop-types': 'off',
+    'react/no-deprecated': 'off',
+  },
+  settings: {
+    react: {
+      version: 'detect', // 自动检测 React 版本
     },
   },
-])
+});

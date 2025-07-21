@@ -60,9 +60,6 @@ yarn.lock
 # 依赖目录
 jspm_packages/
 
-# TypeScript v1 声明文件
-typings/
-
 # 可选的 npm 缓存目录
 .npm
 
