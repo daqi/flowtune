@@ -1,5 +1,11 @@
 packages:
-  - 'packages/*'
+  - packages/*
 
-# 可选：配置pnpm的行为
-packageImportMethod: 'auto'
+ignoredBuiltDependencies:
+  - better-sqlite3
+  - electron
+  - electron-winstaller
+  - esbuild
+  - unrs-resolver
+
+packageImportMethod: auto
