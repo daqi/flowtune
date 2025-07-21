@@ -4,16 +4,21 @@ import {
   FlowExecutionResult, 
   FlowExecutionContext,
   NodeExecutionResult,
-  NodeType,
-  InputValue,
-  LoopContext,
   ExecutionLog
 } from '../core/types'
 import { ActionService } from '../modules/action/action.service'
+import { NodeRegistryManager, defaultNodeRegistry } from '../nodes'
 import crypto from 'crypto'
 
 export class FlowEngine {
-  constructor(private actionService: ActionService) {}
+  private nodeRegistry: NodeRegistryManager
+
+  constructor(
+    private actionService: ActionService,
+    nodeRegistry?: NodeRegistryManager
+  ) {
+    this.nodeRegistry = nodeRegistry || defaultNodeRegistry
+  }
 
   /**
    * 执行流程
@@ -91,56 +96,19 @@ export class FlowEngine {
     context: FlowExecutionContext,
     logs: ExecutionLog[]
   ): Promise<NodeExecutionResult> {
-    const startTime = Date.now()
     context.currentNode = node.id
 
     this.log(logs, 'info', `执行节点: ${node.type}`, { nodeId: node.id, title: node.data?.title })
 
     try {
-      let result: any
-
-      switch (node.type) {
-        case 'start':
-          result = await this.executeStartNode(node, context, logs)
-          break
-        case 'end':
-          result = await this.executeEndNode(node, context, logs)
-          break
-        case 'llm':
-          result = await this.executeLLMNode(node, context, logs)
-          break
-        case 'agent':
-          result = await this.executeAgentNode(node, context, logs)
-          break
-        case 'switch':
-          result = await this.executeSwitchNode(node, context, logs)
-          break
-        case 'loop':
-          result = await this.executeLoopNode(node, context, logs)
-          break
-        case 'if':
-          result = await this.executeIfNode(node, context, logs)
-          break
-        case 'tryCatch':
-          result = await this.executeTryCatchNode(node, context, logs)
-          break
-        case 'action':
-          result = await this.executeActionNode(node, context, logs)
-          break
-        default:
-          this.log(logs, 'warn', `未实现的节点类型: ${node.type}`, { nodeId: node.id })
-          result = { success: true, message: `节点 ${node.type} 跳过执行` }
+      // 获取节点执行器
+      const executor = this.nodeRegistry.getExecutor(node.type)
+      if (!executor) {
+        throw new Error(`不支持的节点类型: ${node.type}`)
       }
 
-      const executionResult: NodeExecutionResult = {
-        success: true,
-        data: result,
-        executionTime: Date.now() - startTime,
-        timestamp: new Date(),
-        nodeType: node.type
-      }
-
-      context.nodeResults.set(node.id, executionResult)
+      // 执行节点
+      const result = await executor.execute(node, context, logs)
 
       // 执行子节点
       if (node.blocks && node.blocks.length > 0) {
@@ -149,7 +117,7 @@ export class FlowEngine {
         }
       }
 
-      return executionResult
+      return result
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '节点执行失败'
@@ -158,341 +126,13 @@ export class FlowEngine {
       const executionResult: NodeExecutionResult = {
         success: false,
         error: errorMessage,
-        executionTime: Date.now() - startTime,
+        executionTime: 0,
         timestamp: new Date(),
         nodeType: node.type
       }
 
       context.nodeResults.set(node.id, executionResult)
       return executionResult
-    }
-  }
-
-  /**
-   * 执行起始节点
-   */
-  private async executeStartNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行起始节点', { nodeId: node.id })
-
-    // 起始节点的outputs定义了初始变量
-    if (node.data?.outputs?.properties) {
-      for (const [key, prop] of Object.entries(node.data.outputs.properties)) {
-        if (prop.default !== undefined) {
-          context.variables[key] = prop.default
-        }
-      }
-    }
-
-    return {
-      success: true,
-      message: '流程开始',
-      variables: context.variables
-    }
-  }
-
-  /**
-   * 执行结束节点
-   */
-  private async executeEndNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行结束节点', { nodeId: node.id })
-
-    // 收集最终输出
-    const outputs: Record<string, any> = {}
-    if (node.data?.outputs?.properties) {
-      for (const [key, prop] of Object.entries(node.data.outputs.properties)) {
-        outputs[key] = context.variables[key] || prop.default
-      }
-    }
-
-    return {
-      success: true,
-      message: '流程结束',
-      outputs,
-      finalVariables: context.variables
-    }
-  }
-
-  /**
-   * 执行LLM节点
-   */
-  private async executeLLMNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行LLM节点', { nodeId: node.id })
-
-    const inputValues = node.data?.inputsValues || {}
-    const parameters: Record<string, any> = {}
-
-    // 解析输入参数
-    for (const [key, inputValue] of Object.entries(inputValues)) {
-      parameters[key] = this.resolveInputValue(inputValue, context.variables)
-    }
-
-    this.log(logs, 'debug', 'LLM参数', { parameters })
-
-    // 模拟LLM调用
-    const prompt = parameters.prompt || ''
-    const systemPrompt = parameters.systemPrompt || ''
-    const modelType = parameters.modelType || 'gpt-3.5-turbo'
-    const temperature = parameters.temperature || 0.5
-
-    // 这里应该调用实际的LLM API
-    const result = `LLM回复 (${modelType}): 基于提示 "${prompt}" 生成的回复`
-
-    // 更新变量
-    context.variables.llm_result = result
-
-    return {
-      success: true,
-      result,
-      parameters,
-      model: modelType
-    }
-  }
-
-  /**
-   * 执行Agent节点
-   */
-  private async executeAgentNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行Agent节点', { nodeId: node.id })
-
-    const results: Record<string, any> = {}
-
-    // 执行Agent的各个组件
-    if (node.blocks) {
-      for (const block of node.blocks) {
-        const blockResult = await this.executeNode(block, [], context, logs)
-        results[block.type] = blockResult.data
-      }
-    }
-
-    return {
-      success: true,
-      message: 'Agent执行完成',
-      components: results
-    }
-  }
-
-  /**
-   * 执行Switch节点
-   */
-  private async executeSwitchNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行Switch节点', { nodeId: node.id })
-
-    if (!node.blocks) {
-      return { success: true, message: 'Switch节点无分支' }
-    }
-
-    // 依次检查case条件
-    for (const caseBlock of node.blocks) {
-      if (caseBlock.type === 'case') {
-        const condition = this.evaluateCondition(caseBlock, context.variables)
-        if (condition) {
-          this.log(logs, 'info', `执行Case分支: ${caseBlock.data?.title}`, { caseId: caseBlock.id })
-          await this.executeNode(caseBlock, [], context, logs)
-          return { success: true, branch: caseBlock.id, condition: true }
-        }
-      }
-    }
-
-    // 执行default分支
-    const defaultBlock = node.blocks.find(block => block.type === 'caseDefault')
-    if (defaultBlock) {
-      this.log(logs, 'info', '执行Default分支', { defaultId: defaultBlock.id })
-      await this.executeNode(defaultBlock, [], context, logs)
-      return { success: true, branch: defaultBlock.id, condition: false }
-    }
-
-    return { success: true, message: '无匹配的分支' }
-  }
-
-  /**
-   * 执行Loop节点
-   */
-  private async executeLoopNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行Loop节点', { nodeId: node.id })
-
-    const batchFor = node.data?.batchFor
-    if (!batchFor) {
-      throw new Error('Loop节点缺少batchFor配置')
-    }
-
-    const items = this.resolveInputValue(batchFor, context.variables)
-    if (!Array.isArray(items)) {
-      throw new Error('Loop节点的batchFor必须是数组')
-    }
-
-    const loopContext: LoopContext = {
-      nodeId: node.id,
-      items,
-      currentIndex: 0,
-      currentItem: null,
-      variables: { ...context.variables }
-    }
-
-    context.loopStack.push(loopContext)
-    const results: any[] = []
-
-    try {
-      for (let i = 0; i < items.length; i++) {
-        loopContext.currentIndex = i
-        loopContext.currentItem = items[i]
-        
-        // 设置循环变量
-        context.variables.__loop_index = i
-        context.variables.__loop_item = items[i]
-
-        this.log(logs, 'debug', `Loop迭代 ${i + 1}/${items.length}`, { item: items[i] })
-
-        // 执行循环体
-        if (node.blocks) {
-          for (const block of node.blocks) {
-            const blockResult = await this.executeNode(block, [], context, logs)
-            
-            // 检查是否有break
-            if (this.shouldBreakLoop(block, blockResult)) {
-              this.log(logs, 'info', 'Loop中断', { index: i })
-              break
-            }
-          }
-        }
-
-        results.push(context.variables.__loop_item)
-      }
-    } finally {
-      context.loopStack.pop()
-      // 清理循环变量
-      delete context.variables.__loop_index
-      delete context.variables.__loop_item
-    }
-
-    return {
-      success: true,
-      iterations: results.length,
-      totalItems: items.length,
-      results
-    }
-  }
-
-  /**
-   * 执行If节点
-   */
-  private async executeIfNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行If节点', { nodeId: node.id })
-
-    const condition = this.evaluateCondition(node, context.variables)
-    this.log(logs, 'debug', `If条件结果: ${condition}`)
-
-    if (!node.blocks) {
-      return { success: true, condition }
-    }
-
-    // 查找true和false分支
-    const trueBranch = node.blocks.find(block => block.data?.title === 'true')
-    const falseBranch = node.blocks.find(block => block.data?.title === 'false')
-
-    if (condition && trueBranch) {
-      this.log(logs, 'info', '执行true分支')
-      await this.executeNode(trueBranch, [], context, logs)
-      return { success: true, condition: true, branch: 'true' }
-    } else if (!condition && falseBranch) {
-      this.log(logs, 'info', '执行false分支')
-      await this.executeNode(falseBranch, [], context, logs)
-      return { success: true, condition: false, branch: 'false' }
-    }
-
-    return { success: true, condition, branch: 'none' }
-  }
-
-  /**
-   * 执行TryCatch节点
-   */
-  private async executeTryCatchNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行TryCatch节点', { nodeId: node.id })
-
-    if (!node.blocks) {
-      return { success: true, message: 'TryCatch节点无子块' }
-    }
-
-    const tryBlock = node.blocks.find(block => block.type === 'tryBlock')
-    const catchBlocks = node.blocks.filter(block => block.type === 'catchBlock')
-
-    if (!tryBlock) {
-      throw new Error('TryCatch节点缺少tryBlock')
-    }
-
-    try {
-      this.log(logs, 'info', '执行try块')
-      await this.executeNode(tryBlock, [], context, logs)
-      return { success: true, executed: 'try', error: null }
-    } catch (error) {
-      this.log(logs, 'warn', 'try块执行失败，尝试catch块', { error })
-
-      // 尝试执行catch块
-      for (const catchBlock of catchBlocks) {
-        try {
-          const condition = this.evaluateCondition(catchBlock, { ...context.variables, error })
-          if (condition) {
-            this.log(logs, 'info', `执行catch块: ${catchBlock.data?.title}`)
-            await this.executeNode(catchBlock, [], context, logs)
-            return { success: true, executed: 'catch', catchBlock: catchBlock.id, error }
-          }
-        } catch (catchError) {
-          this.log(logs, 'error', 'catch块执行也失败', { catchError })
-        }
-      }
-
-      // 所有catch块都失败，重新抛出错误
-      throw error
-    }
-  }
-
-  /**
-   * 执行Action节点
-   */
-  private async executeActionNode(
-    node: FlowNode,
-    context: FlowExecutionContext,
-    logs: ExecutionLog[]
-  ): Promise<any> {
-    this.log(logs, 'info', '执行Action节点', { nodeId: node.id })
-
-    // 这里可以集成ActionService来执行实际的API调用
-    // 暂时返回模拟结果
-    return {
-      success: true,
-      message: 'Action节点执行完成',
-      data: { result: 'action_result' }
     }
   }
 
@@ -504,61 +144,77 @@ export class FlowEngine {
   }
 
   /**
-   * 解析输入值
+   * 验证流程文档
    */
-  private resolveInputValue(inputValue: InputValue, variables: Record<string, any>): any {
-    switch (inputValue.type) {
-      case 'constant':
-        return inputValue.content
-      case 'ref':
-        if (Array.isArray(inputValue.content) && inputValue.content.length >= 2) {
-          const [nodeId, path] = inputValue.content
-          const nodeResult = variables[nodeId] || {}
-          return this.getNestedValue(nodeResult, path)
-        }
-        return inputValue.content
-      case 'variable':
-        return variables[inputValue.content] || inputValue.content
-      default:
-        return inputValue.content
+  validateFlowDocument(flowDocument: FlowDocumentJSON): { valid: boolean; errors: string[]; warnings: string[] } {
+    const errors: string[] = []
+    const warnings: string[] = []
+
+    // 基础验证
+    if (!flowDocument.nodes || !Array.isArray(flowDocument.nodes)) {
+      errors.push('flowDocument.nodes 必须是数组')
+      return { valid: false, errors, warnings }
+    }
+
+    if (flowDocument.nodes.length === 0) {
+      errors.push('流程必须至少包含一个节点')
+      return { valid: false, errors, warnings }
+    }
+
+    // 验证每个节点 - 传入所有节点用于关联验证
+    for (const node of flowDocument.nodes) {
+      const executor = this.nodeRegistry.getExecutor(node.type)
+      if (!executor) {
+        errors.push(`不支持的节点类型: ${node.type} (节点ID: ${node.id})`)
+        continue
+      }
+
+      // 使用节点执行器进行验证，传入所有节点
+      const validation = executor.validate(node, flowDocument.nodes)
+      if (!validation.valid) {
+        errors.push(...validation.errors.map(err => `节点 ${node.id}: ${err}`))
+      }
+      warnings.push(...validation.warnings.map(warn => `节点 ${node.id}: ${warn}`))
+    }
+
+    // 检查起始节点
+    const startNodes = this.findStartNodes(flowDocument.nodes)
+    if (startNodes.length === 0) {
+      warnings.push('建议添加起始节点 (start)')
+    }
+
+    // 检查结束节点
+    const endNodes = flowDocument.nodes.filter(node => node.type === 'end')
+    if (endNodes.length === 0) {
+      warnings.push('建议添加结束节点 (end)')
+    }
+
+    // 检查节点ID唯一性
+    const nodeIds = flowDocument.nodes.map(node => node.id)
+    const duplicateIds = nodeIds.filter((id, index) => nodeIds.indexOf(id) !== index)
+    if (duplicateIds.length > 0) {
+      errors.push(`发现重复的节点ID: ${duplicateIds.join(', ')}`)
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+      warnings
     }
   }
 
   /**
-   * 评估条件
+   * 获取支持的节点类型
    */
-  private evaluateCondition(node: FlowNode, variables: Record<string, any>): boolean {
-    const inputValues = node.data?.inputsValues
-    if (!inputValues?.condition) {
-      return true
-    }
-
-    const conditionValue = this.resolveInputValue(inputValues.condition, variables)
-    return Boolean(conditionValue)
+  getSupportedNodeTypes(): string[] {
+    return this.nodeRegistry.getSupportedNodeTypes()
   }
 
   /**
-   * 检查是否应该中断循环
+   * 获取注册器统计信息
    */
-  private shouldBreakLoop(node: FlowNode, result: NodeExecutionResult): boolean {
-    // 检查是否有breakLoop节点
-    if (node.type === 'breakLoop') {
-      return true
-    }
-
-    // 递归检查子节点
-    if (node.blocks) {
-      return node.blocks.some(block => this.shouldBreakLoop(block, result))
-    }
-
-    return false
-  }
-
-  /**
-   * 获取嵌套对象的值
-   */
-  private getNestedValue(obj: any, path: string): any {
-    return path.split('.').reduce((current, key) => current?.[key], obj)
+  getRegistryStats() {
+    return this.nodeRegistry.getStats()
   }
 
   /**
