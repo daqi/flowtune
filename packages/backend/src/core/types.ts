@@ -119,33 +119,164 @@ export interface IPlatformIntegration {
   refreshToken?(auth: IAuth): Promise<IAuth>
 }
 
-// 低代码配置接口
-export interface LowCodeConfig {
-  flowId: string
+// 低代码配置接口 - 匹配前端FlowDocumentJSON结构
+export interface FlowDocumentJSON {
   nodes: FlowNode[]
-  edges: FlowEdge[]
+  edges?: FlowEdge[]
   variables?: Record<string, any>
   settings?: FlowSettings
 }
 
+// 流程节点 - 匹配前端节点结构
 export interface FlowNode {
   id: string
-  type: 'action' | 'condition' | 'trigger' | 'transform'
-  actionId?: string
-  appId?: string
-  configuration: Record<string, any>
-  position: { x: number; y: number }
+  type: NodeType
+  data?: NodeData
+  blocks?: FlowNode[]
+  meta?: NodeMeta
 }
 
+// 节点数据结构
+export interface NodeData {
+  title?: string
+  inputs?: JsonSchema
+  outputs?: JsonSchema
+  inputsValues?: Record<string, InputValue>
+  batchFor?: InputValue
+  [key: string]: any
+}
+
+// 节点元数据
+export interface NodeMeta {
+  defaultExpanded?: boolean
+  [key: string]: any
+}
+
+// 输入值类型
+export interface InputValue {
+  type: 'constant' | 'ref' | 'variable'
+  content: any
+}
+
+// JSON Schema定义
+export interface JsonSchema {
+  type: 'object' | 'array' | 'string' | 'number' | 'boolean'
+  properties?: Record<string, JsonSchemaProperty>
+  items?: JsonSchema
+  required?: string[]
+  default?: any
+}
+
+export interface JsonSchemaProperty {
+  type: 'string' | 'number' | 'boolean' | 'array' | 'object'
+  properties?: Record<string, JsonSchemaProperty>
+  items?: JsonSchemaProperty
+  default?: any
+  extra?: {
+    formComponent?: string
+    [key: string]: any
+  }
+}
+
+// 节点类型枚举
+export type NodeType = 
+  | 'start'
+  | 'end'
+  | 'llm'
+  | 'agent'
+  | 'agentLLM'
+  | 'agentMemory' 
+  | 'agentTools'
+  | 'memory'
+  | 'tool'
+  | 'switch'
+  | 'case'
+  | 'caseDefault'
+  | 'loop'
+  | 'if'
+  | 'ifBlock'
+  | 'breakLoop'
+  | 'tryCatch'
+  | 'tryBlock'
+  | 'catchBlock'
+  | 'action'
+  | 'condition'
+  | 'trigger'
+  | 'transform'
+
+// 流程边
 export interface FlowEdge {
   id: string
   source: string
   target: string
   condition?: string
+  sourceHandle?: string
+  targetHandle?: string
 }
 
+// 流程设置
 export interface FlowSettings {
-  timeout: number
-  retryCount: number
-  errorHandling: 'stop' | 'continue' | 'retry'
+  timeout?: number
+  retryCount?: number
+  errorHandling?: 'stop' | 'continue' | 'retry'
+  parallelExecution?: boolean
+  maxConcurrency?: number
+}
+
+// 流程执行上下文
+export interface FlowExecutionContext {
+  executionId: string
+  flowId: string
+  variables: Record<string, any>
+  nodeResults: Map<string, NodeExecutionResult>
+  currentNode: string | null
+  status: 'running' | 'completed' | 'failed' | 'paused'
+  loopStack: LoopContext[]
+  conditionStack: ConditionContext[]
+}
+
+// 节点执行结果
+export interface NodeExecutionResult {
+  success: boolean
+  data?: any
+  error?: string
+  executionTime: number
+  timestamp: Date
+  nodeType: NodeType
+}
+
+// 循环上下文
+export interface LoopContext {
+  nodeId: string
+  items: any[]
+  currentIndex: number
+  currentItem: any
+  variables: Record<string, any>
+}
+
+// 条件上下文
+export interface ConditionContext {
+  nodeId: string
+  conditionResult: boolean
+  branchTaken: string
+}
+
+// 流程执行结果
+export interface FlowExecutionResult {
+  success: boolean
+  executionId: string
+  executionTime: number
+  results: Record<string, NodeExecutionResult>
+  finalVariables: Record<string, any>
+  error?: string
+  logs?: ExecutionLog[]
+}
+
+// 执行日志
+export interface ExecutionLog {
+  timestamp: Date
+  level: 'info' | 'warn' | 'error' | 'debug'
+  nodeId?: string
+  message: string
+  data?: any
 }

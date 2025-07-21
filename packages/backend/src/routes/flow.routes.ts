@@ -1,24 +1,25 @@
 import { Hono } from 'hono'
 import { FlowEngine } from '../core/flow-engine'
 import { ActionService } from '../modules/action/action.service'
+import { testFlowEngine, demoFlowData } from '../test/flow-engine.test'
 
 export function createFlowRoutes(flowEngine: FlowEngine, actionService: ActionService) {
   const app = new Hono()
 
-  // 执行流程
+  // 执行流程 - 更新为支持新的FlowDocumentJSON格式
   app.post('/execute', async (c) => {
     try {
       const body = await c.req.json()
-      const { config, inputData } = body
-      
-      if (!config) {
-        return c.json({
-          success: false,
-          error: 'Flow configuration is required'
+      const { flowDocument, inputData = {} } = body
+
+      if (!flowDocument) {
+        return c.json({ 
+          success: false, 
+          error: '缺少flowDocument参数' 
         }, 400)
       }
 
-      const result = await flowEngine.executeFlow(config, inputData)
+      const result = await flowEngine.executeFlow(flowDocument, inputData)
       
       return c.json({
         success: true,
@@ -27,24 +28,24 @@ export function createFlowRoutes(flowEngine: FlowEngine, actionService: ActionSe
     } catch (error) {
       return c.json({
         success: false,
-        error: error instanceof Error ? error.message : 'Flow execution failed'
-      }, 400)
+        error: error instanceof Error ? error.message : '流程执行失败'
+      }, 500)
     }
   })
 
   // 验证流程配置
   app.post('/validate', async (c) => {
     try {
-      const { config } = await c.req.json()
+      const { flowDocument } = await c.req.json()
       
-      if (!config) {
+      if (!flowDocument) {
         return c.json({
           success: false,
-          error: 'Flow configuration is required'
+          error: 'Flow document is required'
         }, 400)
       }
 
-      const validation = validateFlowConfig(config, actionService)
+      const validation = validateFlowDocument(flowDocument)
       
       return c.json({
         success: true,
@@ -113,10 +114,10 @@ export function createFlowRoutes(flowEngine: FlowEngine, actionService: ActionSe
   // 流程调试接口
   app.post('/debug', async (c) => {
     try {
-      const { config, inputData, breakpoints } = await c.req.json()
+      const { flowDocument, inputData, breakpoints } = await c.req.json()
       
       // 创建调试版本的流程执行器
-      const debugResult = await debugFlow(flowEngine, config, inputData, breakpoints)
+      const debugResult = await debugFlow(flowEngine, flowDocument, inputData, breakpoints)
       
       return c.json({
         success: true,
@@ -130,99 +131,143 @@ export function createFlowRoutes(flowEngine: FlowEngine, actionService: ActionSe
     }
   })
 
+  // 获取demo流程数据
+  app.get('/demo', async (c) => {
+    return c.json({
+      success: true,
+      data: demoFlowData
+    })
+  })
+
+  // 测试demo流程执行
+  app.post('/test-demo', async (c) => {
+    try {
+      const body = await c.req.json()
+      const inputData = body.inputData || {}
+
+      const result = await flowEngine.executeFlow(demoFlowData, inputData)
+      
+      return c.json({
+        success: true,
+        data: result
+      })
+    } catch (error) {
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Demo流程执行失败'
+      }, 500)
+    }
+  })
+
+  // 运行完整测试
+  app.post('/run-test', async (c) => {
+    try {
+      const result = await testFlowEngine()
+      
+      return c.json({
+        success: true,
+        data: result,
+        message: '测试执行完成'
+      })
+    } catch (error) {
+      return c.json({
+        success: false,
+        error: error instanceof Error ? error.message : '测试执行失败'
+      }, 500)
+    }
+  })
+
+  // 获取支持的节点类型
+  app.get('/node-types', async (c) => {
+    const nodeTypes = [
+      'start',
+      'end', 
+      'llm',
+      'agent',
+      'agentLLM',
+      'agentMemory',
+      'agentTools',
+      'memory',
+      'tool',
+      'switch',
+      'case',
+      'caseDefault',
+      'loop',
+      'if',
+      'ifBlock',
+      'breakLoop',
+      'tryCatch',
+      'tryBlock',
+      'catchBlock',
+      'action',
+      'condition',
+      'trigger',
+      'transform'
+    ]
+
+    return c.json({
+      success: true,
+      data: {
+        nodeTypes,
+        count: nodeTypes.length,
+        description: '支持的流程节点类型'
+      }
+    })
+  })
+
   return app
 }
 
-// 验证流程配置
-function validateFlowConfig(config: any, actionService: ActionService) {
+// 更新验证函数以支持新格式
+function validateFlowDocument(flowDocument: any) {
   const errors: string[] = []
   const warnings: string[] = []
 
-  // 验证基本结构
-  if (!config.flowId) {
-    errors.push('Flow ID is required')
+  // 检查必需字段
+  if (!flowDocument.nodes || !Array.isArray(flowDocument.nodes)) {
+    errors.push('flowDocument.nodes 必须是数组')
   }
 
-  if (!config.nodes || !Array.isArray(config.nodes)) {
-    errors.push('Nodes array is required')
+  if (flowDocument.nodes.length === 0) {
+    errors.push('流程必须至少包含一个节点')
   }
 
-  if (!config.edges || !Array.isArray(config.edges)) {
-    errors.push('Edges array is required')
+  // 检查起始节点
+  const startNodes = flowDocument.nodes.filter((node: any) => node.type === 'start')
+  if (startNodes.length === 0) {
+    warnings.push('建议添加起始节点 (start)')
   }
 
-  if (config.nodes) {
-    // 验证节点
-    config.nodes.forEach((node: any, index: number) => {
-      if (!node.id) {
-        errors.push(`Node at index ${index} missing ID`)
-      }
+  // 检查结束节点
+  const endNodes = flowDocument.nodes.filter((node: any) => node.type === 'end')
+  if (endNodes.length === 0) {
+    warnings.push('建议添加结束节点 (end)')
+  }
 
-      if (!node.type) {
-        errors.push(`Node ${node.id} missing type`)
-      }
+  // 检查节点ID唯一性
+  const nodeIds = flowDocument.nodes.map((node: any) => node.id)
+  const duplicateIds = nodeIds.filter((id: string, index: number) => nodeIds.indexOf(id) !== index)
+  if (duplicateIds.length > 0) {
+    errors.push(`发现重复的节点ID: ${duplicateIds.join(', ')}`)
+  }
 
-      if (node.type === 'action') {
-        if (!node.actionId) {
-          errors.push(`Action node ${node.id} missing actionId`)
-        } else {
-          const action = actionService.getAction(node.actionId)
-          if (!action) {
-            errors.push(`Action ${node.actionId} not found for node ${node.id}`)
-          }
-        }
-      }
-    })
-
-    // 检查是否有起始节点
-    const nodeIds = new Set(config.nodes.map((n: any) => n.id))
-    const targetNodes = new Set(config.edges?.map((e: any) => e.target) || [])
-    const startNodes = config.nodes.filter((n: any) => !targetNodes.has(n.id))
-    
-    if (startNodes.length === 0) {
-      warnings.push('No start nodes found (nodes with no incoming edges)')
+  // 检查每个节点的基本结构
+  flowDocument.nodes.forEach((node: any, index: number) => {
+    if (!node.id) {
+      errors.push(`节点 ${index} 缺少id字段`)
     }
-
-    // 检查是否有孤立节点
-    const connectedNodes = new Set([
-      ...(config.edges?.map((e: any) => e.source) || []),
-      ...(config.edges?.map((e: any) => e.target) || [])
-    ])
-    
-    const isolatedNodes = config.nodes.filter((n: any) => !connectedNodes.has(n.id))
-    if (isolatedNodes.length > 0) {
-      warnings.push(`Isolated nodes found: ${isolatedNodes.map((n: any) => n.id).join(', ')}`)
+    if (!node.type) {
+      errors.push(`节点 ${node.id || index} 缺少type字段`)
     }
-  }
-
-  if (config.edges) {
-    // 验证边
-    config.edges.forEach((edge: any, index: number) => {
-      if (!edge.source) {
-        errors.push(`Edge at index ${index} missing source`)
-      }
-
-      if (!edge.target) {
-        errors.push(`Edge at index ${index} missing target`)
-      }
-
-      // 检查节点是否存在
-      if (config.nodes) {
-        const nodeIds = new Set(config.nodes.map((n: any) => n.id))
-        if (edge.source && !nodeIds.has(edge.source)) {
-          errors.push(`Edge source node ${edge.source} not found`)
-        }
-        if (edge.target && !nodeIds.has(edge.target)) {
-          errors.push(`Edge target node ${edge.target} not found`)
-        }
-      }
-    })
-  }
+  })
 
   return {
-    isValid: errors.length === 0,
+    valid: errors.length === 0,
     errors,
-    warnings
+    warnings,
+    nodeCount: flowDocument.nodes.length,
+    startNodes: startNodes.length,
+    endNodes: endNodes.length
   }
 }
 
@@ -230,70 +275,63 @@ function validateFlowConfig(config: any, actionService: ActionService) {
 function getFlowTemplates() {
   return [
     {
-      id: 'simple-http',
-      name: '简单HTTP请求',
-      description: '发送HTTP请求并处理响应',
+      id: 'simple-start-end',
+      name: '简单开始结束流程',
+      description: '最基本的开始到结束流程',
       category: 'basic',
       nodes: [
         {
-          id: 'start',
-          type: 'trigger',
+          id: 'start-node',
+          type: 'start',
           position: { x: 100, y: 100 },
-          configuration: {}
+          configuration: {},
+          children: ['end-node']
         },
         {
-          id: 'http-request',
-          type: 'action',
-          actionId: 'http-get',
+          id: 'end-node',
+          type: 'end',
           position: { x: 300, y: 100 },
-          configuration: {
-            parameters: {
-              url: '{{input.url}}'
-            }
-          }
+          configuration: {}
         }
       ],
-      edges: [
-        {
-          id: 'start-to-http',
-          source: 'start',
-          target: 'http-request'
-        }
-      ]
+      variables: {}
     },
     {
-      id: 'ai-chat',
-      name: 'AI对话处理',
-      description: '使用OpenAI处理用户消息',
+      id: 'ai-chat-flow',
+      name: 'AI对话处理流程',
+      description: '使用LLM处理用户消息的完整流程',
       category: 'ai',
       nodes: [
         {
-          id: 'start',
-          type: 'trigger',
+          id: 'start-node',
+          type: 'start',
           position: { x: 100, y: 100 },
-          configuration: {}
+          configuration: {},
+          children: ['llm-node']
         },
         {
-          id: 'ai-chat',
-          type: 'action',
-          actionId: 'openai-chat',
+          id: 'llm-node',
+          type: 'llm',
           position: { x: 300, y: 100 },
           configuration: {
-            parameters: {
-              model: 'gpt-3.5-turbo',
-              messages: '{{input.messages}}',
-              temperature: 0.7
-            }
-          }
+            model: 'gpt-3.5-turbo',
+            prompt: 'You are a helpful assistant. Respond to: {{input.message}}',
+            temperature: 0.7
+          },
+          children: ['end-node']
+        },
+        {
+          id: 'end-node',
+          type: 'end',
+          position: { x: 500, y: 100 },
+          configuration: {}
         }
       ],
-      edges: [
-        {
-          id: 'start-to-ai',
-          source: 'start',
-          target: 'ai-chat'
+      variables: {
+        input: {
+          message: '用户输入的消息'
         }
-      ]
+      }
     }
   ]
 }
@@ -305,19 +343,19 @@ function getFlowTemplate(templateId: string) {
 }
 
 // 流程调试
-async function debugFlow(flowEngine: FlowEngine, config: any, inputData: any, breakpoints: string[] = []) {
+async function debugFlow(flowEngine: FlowEngine, flowDocument: any, inputData: any, breakpoints: string[] = []) {
   // 这里可以实现更复杂的调试逻辑
   // 目前只是简单执行并返回详细信息
   
-  const result = await flowEngine.executeFlow(config, inputData)
+  const result = await flowEngine.executeFlow(flowDocument, inputData)
   
   return {
     execution: result,
     breakpoints,
     debugInfo: {
-      totalNodes: config.nodes?.length || 0,
-      totalEdges: config.edges?.length || 0,
-      executedNodes: Object.keys(result.results || {}).length
+      totalNodes: flowDocument.nodes?.length || 0,
+      executedNodes: result.results ? Object.keys(result.results).length : 0,
+      executionTime: result.executionTime || 0
     }
   }
 }
