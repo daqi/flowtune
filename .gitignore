@@ -1,0 +1,156 @@
+# 依赖
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 构建输出
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist
+
+# 环境变量
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 日志
+logs
+*.log
+
+# 运行时数据
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 覆盖率目录
+lib-cov
+coverage/
+.nyc_output
+
+# node-waf 配置
+.lock-wscript
+
+# 依赖锁定文件 (保留pnpm-lock.yaml)
+package-lock.json
+yarn.lock
+
+# TypeScript 缓存
+*.tsbuildinfo
+
+# 可选的 npm 缓存目录
+.npm
+
+# 可选的 REPL 历史
+.node_repl_history
+
+# 输出的二进制文件
+*.tar.gz
+
+# 依赖目录
+jspm_packages/
+
+# TypeScript v1 声明文件
+typings/
+
+# 可选的 npm 缓存目录
+.npm
+
+# 可选的 eslint 缓存
+.eslintcache
+
+# 可选的 REPL 历史
+.node_repl_history
+
+# 输出的二进制文件
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler 缓存 (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# VS Code
+.vscode/
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+flowtune.db
+
+# Electron 特定
+packages/desktop/dist/
+packages/desktop/out/
+
+# Drizzle
+drizzle/
+migration/
+
+# 临时文件
+temp/
+tmp/
+*.tmp
+
+# 测试
+test-results/
+playwright-report/
+blob-report/
+
+# Storybook
+storybook-static/
+
+# Local Netlify folder
+.netlify

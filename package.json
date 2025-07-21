@@ -1,0 +1,39 @@
+{
+  "name": "flowtune",
+  "version": "1.0.0",
+  "description": "FlowTune - 流韵",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "dev:backend": "pnpm --filter @flowtune/backend dev",
+    "dev:frontend": "pnpm --filter @flowtune/frontend dev",
+    "dev:desktop": "pnpm --filter @flowtune/desktop dev",
+    "build": "pnpm --recursive build",
+    "build:backend": "pnpm --filter @flowtune/backend build",
+    "build:frontend": "pnpm --filter @flowtune/frontend build",
+    "build:desktop": "pnpm --filter @flowtune/desktop build",
+    "start": "pnpm --filter @flowtune/backend start",
+    "test": "pnpm --recursive test",
+    "lint": "pnpm --recursive lint",
+    "type-check": "pnpm --recursive type-check",
+    "install:all": "pnpm install",
+    "clean": "pnpm --recursive clean && rm -rf node_modules"
+  },
+  "keywords": [
+    "hono",
+    "drizzle",
+    "react",
+    "electron",
+    "flowgram",
+    "typescript",
+    "fullstack"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.8.3"
+  }
+}

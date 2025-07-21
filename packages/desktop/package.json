@@ -1,0 +1,44 @@
+{
+  "name": "@flowtune/desktop",
+  "version": "1.0.0",
+  "description": "FlowTune desktop application with Electron",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "concurrently \"pnpm run build:watch\" \"pnpm run electron:dev\"",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "electron:dev": "wait-on dist/main.js && electron .",
+    "electron:pack": "electron-builder",
+    "electron:dist": "pnpm run build && electron-builder",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "electron": "^37.2.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "electron-builder": "^26.0.12",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "com.flowtune.app",
+    "productName": "FlowTune",
+    "directories": {
+      "output": "../../dist/desktop"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

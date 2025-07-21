@@ -1,0 +1,5 @@
+packages:
+  - 'packages/*'
+
+# 可选：配置pnpm的行为
+packageImportMethod: 'auto'
