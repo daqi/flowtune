@@ -17,16 +17,25 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.17.1",
+    "@hono/node-ws": "^1.0.2",
+    "@hono/swagger-ui": "^0.2.1",
+    "@hono/zod-validator": "^0.4.1",
+    "@flowgram.ai/runtime-js": "^0.2.27",
+    "@flowgram.ai/runtime-interface": "^0.2.27",
     "better-sqlite3": "^12.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.3",
     "drizzle-zod": "^0.8.2",
-    "hono": "^4.8.5"
+    "hono": "^4.8.5",
+    "lodash-es": "^4.17.21",
+    "zod": "^3.24.4",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.19",
+    "@types/uuid": "^9.0.8",
     "drizzle-kit": "^0.31.4",
     "tsx": "^4.20.3"
   }

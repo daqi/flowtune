@@ -17,8 +17,8 @@
     "@douyinfe/semi-ui": "^2.80.0",
     "@flowgram.ai/fixed-layout-editor": "^0.2.27",
     "@flowgram.ai/fixed-semi-materials": "^0.2.27",
-    "@flowgram.ai/form-materials": "0.2.27",
-    "@flowgram.ai/group-plugin": "0.2.27",
+    "@flowgram.ai/form-materials": "^0.2.27",
+    "@flowgram.ai/group-plugin": "^0.2.27",
     "@flowgram.ai/minimap-plugin": "^0.2.27",
     "axios": "^1.10.0",
     "lodash-es": "^4.17.21",
@@ -39,7 +39,7 @@
     "less": "^4.4.0",
     "typescript-eslint": "^8.37.0",
     "vite": "^7.0.5",
-    "@flowgram.ai/ts-config": "0.2.27",
-    "@flowgram.ai/eslint-config": "0.2.27"
+    "@flowgram.ai/ts-config": "^0.2.27",
+    "@flowgram.ai/eslint-config": "^0.2.27"
   }
 }
