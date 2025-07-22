@@ -18,7 +18,7 @@
     "lint": "pnpm --recursive lint",
     "type-check": "pnpm --recursive type-check",
     "install:all": "pnpm install",
-    "clean": "pnpm --recursive clean && rm -rf node_modules"
+    "build:flowgram.ai": "git submodule update --init --recursive && cd flowgram.ai && rush install && rush build"
   },
   "keywords": [
     "hono",

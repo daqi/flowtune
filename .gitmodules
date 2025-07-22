@@ -1,3 +1,4 @@
 [submodule "flowgram.ai"]
 	path = flowgram.ai
 	url = https://github.com/bytedance/flowgram.ai.git
+	branch = main
