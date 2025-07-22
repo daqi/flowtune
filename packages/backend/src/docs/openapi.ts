@@ -16,7 +16,7 @@ export function generateOpenAPISpec() {
     },
     servers: [
       {
-        url: `http://localhost:${ServerConfig.port}${ServerConfig.basePath}`,
+        url: `http://localhost:${ServerConfig.port}${ServerConfig.basePath}/flowgram`,
         description: 'Development server',
       },
     ],

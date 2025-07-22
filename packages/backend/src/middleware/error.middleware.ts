@@ -3,8 +3,9 @@
  * Provides comprehensive error handling and logging
  */
 
-import { Hono } from 'hono';
+import { Context, Next } from 'hono';
 import { HTTPException } from 'hono/http-exception';
+import { ContentfulStatusCode } from 'hono/utils/http-status';
 
 export interface ErrorResponse {
   error: {
@@ -18,11 +19,11 @@ export interface ErrorResponse {
 }
 
 export class AppError extends Error {
-  public readonly statusCode: number;
+  public readonly statusCode: ContentfulStatusCode;
   public readonly code: string;
   public readonly details?: any;
 
-  constructor(message: string, statusCode: number = 500, code?: string, details?: any) {
+  constructor(message: string, statusCode: ContentfulStatusCode = 500, code?: string, details?: any) {
     super(message);
     this.statusCode = statusCode;
     this.code = code || `ERROR_${statusCode}`;
@@ -32,7 +33,7 @@ export class AppError extends Error {
 }
 
 export function errorHandler() {
-  return async (c: any, next: any) => {
+  return async (c: Context, next: Next) => {
     try {
       await next();
     } catch (error) {
@@ -44,7 +45,7 @@ export function errorHandler() {
         timestamp: new Date().toISOString(),
       });
 
-      let statusCode = 500;
+      let statusCode: ContentfulStatusCode = 500;
       let errorCode = 'INTERNAL_SERVER_ERROR';
       let message = 'Internal Server Error';
       let details: any = undefined;

@@ -1,26 +1,26 @@
 import { Hono } from 'hono'
-import { cors } from 'hono/cors'
 import { serve } from '@hono/node-server'
+import { cors } from 'hono/cors'
+import { logger } from 'hono/logger'
+import { requestId } from 'hono/request-id'
+import { timeout } from 'hono/timeout'
 import { config } from 'dotenv'
 
 // 导入服务层
 import { AppService } from './modules/app/app.service'
 import { AuthService } from './modules/auth/auth.service'
 import { ActionService } from './modules/action/action.service'
-import { FlowEngine } from './core/flow-engine'
 
 // 导入路由
 import { createAppRoutes } from './routes/app.routes'
 import { createAuthRoutes } from './routes/auth.routes'
 import { createActionRoutes } from './routes/action.routes'
-import { createFlowRoutes } from './routes/flow.routes'
 import { createFlowGramRoutes } from './routes/flowgram.routes'
 import { createDocsRoutes } from './routes/docs.routes'
 import { createWebSocketRoutes } from './websocket/websocket.handler'
 
 // 导入中间件
 import { errorHandler, notFoundHandler } from './middleware/error.middleware'
-import { requestLogger, logger, createLoggingRoutes } from './middleware/logging.middleware'
 import { rateLimiters, createRateLimitRoutes } from './middleware/rate-limit.middleware'
 
 // 导入配置
@@ -36,14 +36,15 @@ const app = new Hono()
 const appService = new AppService()
 const authService = new AuthService()
 const actionService = new ActionService(appService, authService)
-const flowEngine = new FlowEngine(actionService)
 
 // Global middleware
-app.use('*', requestLogger())
-app.use('*', errorHandler())
+app.use(logger())
+app.use(requestId())
+app.use(timeout(10000))
+app.use(errorHandler())
 
 // CORS middleware
-app.use('*', cors({
+app.use(cors({
   origin: envConfig.CORS_ORIGINS,
   credentials: true,
 }))
@@ -55,7 +56,6 @@ app.use('/ws/*', rateLimiters.websocket.middleware())
 
 // Health check endpoint
 app.get('/', (c) => {
-  logger.info('Health check accessed', 'HEALTH')
   return c.json({ 
     message: 'FlowTune Backend API - 低代码自动化平台', 
     version: ServerConfig.version,
@@ -104,7 +104,6 @@ api.get('/health', (c) => {
 api.route('/apps', createAppRoutes(appService))
 api.route('/auth', createAuthRoutes(authService))
 api.route('/actions', createActionRoutes(actionService))
-api.route('/flows', createFlowRoutes(flowEngine, actionService))
 api.route('/flowgram', createFlowGramRoutes())
 
 // Mount API routes
@@ -115,7 +114,6 @@ const { app: wsApp, injectWebSocket } = createWebSocketRoutes()
 app.route('/ws', wsApp)
 
 // Mount system routes
-app.route('/system/logs', createLoggingRoutes())
 app.route('/system/rate-limit', createRateLimitRoutes())
 
 // Mount documentation routes
@@ -126,20 +124,12 @@ app.notFound(notFoundHandler())
 
 const port = ServerConfig.port
 
-logger.info('🚀 FlowTune Backend starting up', 'STARTUP', {
-  port,
-  environment: envConfig.NODE_ENV,
-  logLevel: envConfig.LOG_LEVEL,
-})
-
 console.log(`🚀 FlowTune Backend server is running on port ${port}`)
 console.log(`📍 Health check: http://localhost:${port}/api/health`)
 console.log(`📚 API Docs: http://localhost:${port}${ServerConfig.docsPath}`)
 console.log(`🔗 FlowGram APIs: http://localhost:${port}${ServerConfig.basePath}`)
 console.log(`🔌 WebSocket endpoint: ws://localhost:${port}/ws/connect`)
-console.log(`📊 System logs: http://localhost:${port}/system/logs/stats`)
 console.log(`⚡ Rate limiting: http://localhost:${port}/system/rate-limit/status`)
-console.log(`🏗️  Architecture: App -> Auth -> Action`)
 console.log(`🔧 Features: Low-code automation platform with FlowGram Runtime`)
 
 const server = serve({
