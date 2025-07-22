@@ -5,13 +5,14 @@
 
 import { useState } from 'react';
 
-import { usePlaygroundTools } from '@flowgram.ai/fixed-layout-editor';
+import { usePlayground, usePlaygroundTools } from '@flowgram.ai/free-layout-editor';
 import { Divider, Dropdown } from '@douyinfe/semi-ui';
 
 import { SelectZoom } from './styles';
 
 export const ZoomSelect = () => {
   const tools = usePlaygroundTools({ maxZoom: 2, minZoom: 0.25 });
+  const playground = usePlayground();
   const [dropDownVisible, openDropDown] = useState(false);
   return (
     <Dropdown
@@ -21,13 +22,21 @@ export const ZoomSelect = () => {
       onClickOutSide={() => openDropDown(false)}
       render={
         <Dropdown.Menu>
-          <Dropdown.Item onClick={() => tools.zoomin()}>Zoomin</Dropdown.Item>
-          <Dropdown.Item onClick={() => tools.zoomout()}>Zoomout</Dropdown.Item>
+          <Dropdown.Item onClick={() => tools.zoomin()}>Zoom in</Dropdown.Item>
+          <Dropdown.Item onClick={() => tools.zoomout()}>Zoom out</Dropdown.Item>
           <Divider layout="horizontal" />
-          <Dropdown.Item onClick={() => tools.updateZoom(0.5)}>50%</Dropdown.Item>
-          <Dropdown.Item onClick={() => tools.updateZoom(1)}>100%</Dropdown.Item>
-          <Dropdown.Item onClick={() => tools.updateZoom(1.5)}>150%</Dropdown.Item>
-          <Dropdown.Item onClick={() => tools.updateZoom(2.0)}>200%</Dropdown.Item>
+          <Dropdown.Item onClick={() => playground.config.updateZoom(0.5)}>
+            Zoom to 50%
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => playground.config.updateZoom(1)}>
+            Zoom to 100%
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => playground.config.updateZoom(1.5)}>
+            Zoom to 150%
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => playground.config.updateZoom(2.0)}>
+            Zoom to 200%
+          </Dropdown.Item>
         </Dropdown.Menu>
       }
     >

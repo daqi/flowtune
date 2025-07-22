@@ -3,31 +3,29 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { EditorRenderer, FixedLayoutEditorProvider } from '@flowgram.ai/fixed-layout-editor';
+import { EditorRenderer, FreeLayoutEditorProvider } from '@flowgram.ai/free-layout-editor';
 
-import { FlowNodeRegistries } from './nodes';
+import '@flowgram.ai/free-layout-editor/index.css';
+import './styles/index.css';
+import { nodeRegistries } from './nodes';
 import { initialData } from './initial-data';
-import { useEditorProps } from './hooks/use-editor-props';
+import { useEditorProps } from './hooks';
+import { DemoTools } from './components/tools';
 import { SidebarProvider, SidebarRenderer } from './components/sidebar';
-import { DemoTools } from './components';
-
-import '@flowgram.ai/fixed-layout-editor/index.css';
 
 export const Editor = () => {
-  /**
-   * Editor Config
-   */
-  const editorProps = useEditorProps(initialData, FlowNodeRegistries);
-
+  const editorProps = useEditorProps(initialData, nodeRegistries);
   return (
-    <div className="doc-feature-overview">
-      <FixedLayoutEditorProvider {...editorProps}>
+    <div className="doc-free-feature-overview">
+      <FreeLayoutEditorProvider {...editorProps}>
         <SidebarProvider>
-          <EditorRenderer />
+          <div className="demo-container">
+            <EditorRenderer className="demo-editor" />
+          </div>
           <DemoTools />
           <SidebarRenderer />
         </SidebarProvider>
-      </FixedLayoutEditorProvider>
+      </FreeLayoutEditorProvider>
     </div>
   );
 };

@@ -3,20 +3,26 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { Field } from '@flowgram.ai/fixed-layout-editor';
+import { FC } from 'react';
+
+import { Field } from '@flowgram.ai/free-layout-editor';
 
 import { TypeTag } from '../type-tag';
 import { JsonSchema } from '../../typings';
 import { useIsSidebar } from '../../hooks';
 import { FormOutputsContainer } from './styles';
 
-export function FormOutputs() {
+interface FormOutputsProps {
+  name?: string;
+}
+
+export const FormOutputs: FC<FormOutputsProps> = ({ name = 'outputs' }) => {
   const isSidebar = useIsSidebar();
   if (isSidebar) {
     return null;
   }
   return (
-    <Field<JsonSchema> name={'outputs'}>
+    <Field<JsonSchema> name={name}>
       {({ field }) => {
         const properties = field.value?.properties;
         if (properties) {
@@ -30,4 +36,4 @@ export function FormOutputs() {
       }}
     </Field>
   );
-}
+};

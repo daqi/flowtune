@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { ASTFactory, definePluginCreator, GlobalScope } from '@flowgram.ai/free-layout-editor';
 import { JsonSchemaUtils } from '@flowgram.ai/form-materials';
-import { ASTFactory, definePluginCreator, GlobalScope } from '@flowgram.ai/fixed-layout-editor';
 
 import iconVariable from '../../assets/icon-variable.png';
 import { VariablePanelLayer } from './variable-panel-layer';

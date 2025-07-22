@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { injectable, inject } from '@flowgram.ai/fixed-layout-editor';
+import { injectable, inject } from '@flowgram.ai/free-layout-editor';
 import {
-  FixedLayoutPluginContext,
+  FreeLayoutPluginContext,
   SelectionService,
   Playground,
-  FlowDocument,
-} from '@flowgram.ai/fixed-layout-editor';
+  WorkflowDocument,
+} from '@flowgram.ai/free-layout-editor';
 
 /**
  * Docs: https://inversify.io/docs/introduction/getting-started/
@@ -33,13 +33,13 @@ import {
  */
 @injectable()
 export class CustomService {
-  @inject(FixedLayoutPluginContext) ctx: FixedLayoutPluginContext;
+  @inject(FreeLayoutPluginContext) ctx: FreeLayoutPluginContext;
 
   @inject(SelectionService) selectionService: SelectionService;
 
   @inject(Playground) playground: Playground;
 
-  @inject(FlowDocument) document: FlowDocument;
+  @inject(WorkflowDocument) document: WorkflowDocument;
 
   save() {
     console.log(this.document.toJSON());

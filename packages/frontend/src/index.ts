@@ -3,4 +3,4 @@
  * SPDX-License-Identifier: MIT
  */
 
-export { Editor as DemoFixedLayout } from './editor';
+export { Editor as DemoFreeLayout } from './editor';

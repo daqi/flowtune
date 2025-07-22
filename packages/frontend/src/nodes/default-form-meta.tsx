@@ -4,21 +4,21 @@
  */
 
 import {
-  autoRenameRefEffect,
-  provideJsonSchemaOutputs,
-  syncVariableTitle,
-} from '@flowgram.ai/form-materials';
-import {
   FormRenderProps,
   FormMeta,
   ValidateTrigger,
   FeedbackLevel,
-} from '@flowgram.ai/fixed-layout-editor';
+} from '@flowgram.ai/free-layout-editor';
+import {
+  autoRenameRefEffect,
+  provideJsonSchemaOutputs,
+  syncVariableTitle,
+} from '@flowgram.ai/form-materials';
 
 import { FlowNodeJSON } from '../typings';
 import { FormHeader, FormContent, FormInputs, FormOutputs } from '../form-components';
 
-export const renderForm = ({ form }: FormRenderProps<FlowNodeJSON['data']>) => (
+export const renderForm = ({ form }: FormRenderProps<FlowNodeJSON>) => (
   <>
     <FormHeader />
     <FormContent>
@@ -28,23 +28,9 @@ export const renderForm = ({ form }: FormRenderProps<FlowNodeJSON['data']>) => (
   </>
 );
 
-export const defaultFormMeta: FormMeta<FlowNodeJSON['data']> = {
+export const defaultFormMeta: FormMeta<FlowNodeJSON> = {
   render: renderForm,
   validateTrigger: ValidateTrigger.onChange,
-  /**
-   * Initialize (fromJSON) data transformation
-   * 初始化(fromJSON) 数据转换
-   * @param value
-   * @param ctx
-   */
-  formatOnInit: (value, ctx) => value,
-  /**
-   * Save (toJSON) data transformation
-   * 保存(toJSON) 数据转换
-   * @param value
-   * @param ctx
-   */
-  formatOnSubmit: (value, ctx) => value,
   validate: {
     title: ({ value }) => (value ? undefined : 'Title is required'),
     'inputsValues.*': ({ value, context, formValues, name }) => {
@@ -62,6 +48,20 @@ export const defaultFormMeta: FormMeta<FlowNodeJSON['data']> = {
       return undefined;
     },
   },
+  /**
+   * Initialize (fromJSON) data transformation
+   * 初始化(fromJSON) 数据转换
+   * @param value
+   * @param ctx
+   */
+  formatOnInit: (value, ctx) => value,
+  /**
+   * Save (toJSON) data transformation
+   * 保存(toJSON) 数据转换
+   * @param value
+   * @param ctx
+   */
+  formatOnSubmit: (value, ctx) => value,
   effect: {
     title: syncVariableTitle,
     outputs: provideJsonSchemaOutputs,

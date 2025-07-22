@@ -4,23 +4,23 @@
  */
 
 import {
-  JsonSchemaEditor,
-  provideJsonSchemaOutputs,
-  syncVariableTitle,
-} from '@flowgram.ai/form-materials';
-import {
   Field,
   FieldRenderProps,
   FormRenderProps,
   FormMeta,
   ValidateTrigger,
-} from '@flowgram.ai/fixed-layout-editor';
+} from '@flowgram.ai/free-layout-editor';
+import {
+  JsonSchemaEditor,
+  provideJsonSchemaOutputs,
+  syncVariableTitle,
+} from '@flowgram.ai/form-materials';
 
 import { FlowNodeJSON, JsonSchema } from '../../typings';
 import { useIsSidebar } from '../../hooks';
 import { FormHeader, FormContent, FormOutputs } from '../../form-components';
 
-export const renderForm = ({ form }: FormRenderProps<FlowNodeJSON['data']>) => {
+export const renderForm = ({ form }: FormRenderProps<FlowNodeJSON>) => {
   const isSidebar = useIsSidebar();
   if (isSidebar) {
     return (
@@ -52,7 +52,7 @@ export const renderForm = ({ form }: FormRenderProps<FlowNodeJSON['data']>) => {
   );
 };
 
-export const formMeta: FormMeta<FlowNodeJSON['data']> = {
+export const formMeta: FormMeta<FlowNodeJSON> = {
   render: renderForm,
   validateTrigger: ValidateTrigger.onChange,
   validate: {

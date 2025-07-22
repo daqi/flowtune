@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { useClientContext, getNodeForm, FlowNodeEntity } from '@flowgram.ai/fixed-layout-editor';
+import { useClientContext, getNodeForm, FlowNodeEntity } from '@flowgram.ai/free-layout-editor';
 import { Button, Badge } from '@douyinfe/semi-ui';
 
 export function Save(props: { disabled: boolean }) {
@@ -27,10 +27,10 @@ export function Save(props: { disabled: boolean }) {
     console.log('>>>>> save data: ', clientContext.document.toJSON());
   }, [clientContext]);
 
+  /**
+   * Listen single node validate
+   */
   useEffect(() => {
-    /**
-     * Listen single node validate
-     */
     const listenSingleNodeValidate = (node: FlowNodeEntity) => {
       const form = getNodeForm(node);
       if (form) {
@@ -44,17 +44,27 @@ export function Save(props: { disabled: boolean }) {
     );
     return () => dispose.dispose();
   }, [clientContext]);
+
   if (errorCount === 0) {
     return (
-      <Button disabled={props.disabled} onClick={onSave}>
+      <Button
+        disabled={props.disabled}
+        onClick={onSave}
+        style={{ backgroundColor: 'rgba(171,181,255,0.3)', borderRadius: '8px' }}
+      >
         Save
       </Button>
     );
   }
   return (
     <Badge count={errorCount} position="rightTop" type="danger">
-      <Button type="danger" disabled={props.disabled} onClick={onSave}>
-        Save
+      <Button
+        type="danger"
+        disabled={props.disabled}
+        onClick={onSave}
+        style={{ backgroundColor: 'rgba(255, 179, 171, 0.3)', borderRadius: '8px' }}
+      >
+          Save
       </Button>
     </Badge>
   );

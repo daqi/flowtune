@@ -17,12 +17,7 @@
     "sourceMap": true,
     "incremental": true,
     "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@flowtune/shared/*": ["packages/shared/src/*"],
-      "@flowtune/backend/*": ["packages/backend/src/*"],
-      "@flowtune/frontend/*": ["packages/frontend/src/*"]
-    }
+    "baseUrl": "."
   },
   "include": [
     "packages/*/src/**/*"
@@ -32,19 +27,5 @@
     "dist",
     "**/*.test.*",
     "**/*.spec.*"
-  ],
-  "references": [
-    {
-      "path": "./packages/shared"
-    },
-    {
-      "path": "./packages/backend"
-    },
-    {
-      "path": "./packages/frontend"
-    },
-    {
-      "path": "./packages/desktop"
-    }
   ]
 }

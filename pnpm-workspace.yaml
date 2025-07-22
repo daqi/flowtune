@@ -1,5 +1,6 @@
 packages:
   - packages/*
+  - flowgram.ai/packages/*
 
 ignoredBuiltDependencies:
   - better-sqlite3
@@ -9,3 +10,73 @@ ignoredBuiltDependencies:
   - unrs-resolver
 
 packageImportMethod: auto
+
+overrides:
+  # Config packages
+  "@flowgram.ai/eslint-config": "file:./flowgram.ai/config/eslint-config"
+  "@flowgram.ai/ts-config": "file:./flowgram.ai/config/ts-config"
+  
+  # Common packages
+  "@flowgram.ai/utils": "file:./flowgram.ai/packages/common/utils"
+  "@flowgram.ai/reactive": "file:./flowgram.ai/packages/common/reactive"
+  "@flowgram.ai/command": "file:./flowgram.ai/packages/common/command"
+  "@flowgram.ai/history": "file:./flowgram.ai/packages/common/history"
+  "@flowgram.ai/history-storage": "file:./flowgram.ai/packages/common/history-storage"
+  "@flowgram.ai/i18n": "file:./flowgram.ai/packages/common/i18n"
+  
+  # Canvas engine packages
+  "@flowgram.ai/core": "file:./flowgram.ai/packages/canvas-engine/core"
+  "@flowgram.ai/document": "file:./flowgram.ai/packages/canvas-engine/document"
+  "@flowgram.ai/renderer": "file:./flowgram.ai/packages/canvas-engine/renderer"
+  "@flowgram.ai/fixed-layout-core": "file:./flowgram.ai/packages/canvas-engine/fixed-layout-core"
+  "@flowgram.ai/free-layout-core": "file:./flowgram.ai/packages/canvas-engine/free-layout-core"
+  
+  # Client packages
+  "@flowgram.ai/editor": "file:./flowgram.ai/packages/client/editor"
+  "@flowgram.ai/fixed-layout-editor": "file:./flowgram.ai/packages/client/fixed-layout-editor"
+  "@flowgram.ai/free-layout-editor": "file:./flowgram.ai/packages/client/free-layout-editor"
+  "@flowgram.ai/playground-react": "file:./flowgram.ai/packages/client/playground-react"
+  
+  # Node engine packages
+  "@flowgram.ai/form": "file:./flowgram.ai/packages/node-engine/form"
+  "@flowgram.ai/form-core": "file:./flowgram.ai/packages/node-engine/form-core"
+  "@flowgram.ai/node": "file:./flowgram.ai/packages/node-engine/node"
+  
+  # Variable engine packages
+  "@flowgram.ai/variable-core": "file:./flowgram.ai/packages/variable-engine/variable-core"
+  "@flowgram.ai/variable-layout": "file:./flowgram.ai/packages/variable-engine/variable-layout"
+  
+  # Plugin packages
+  "@flowgram.ai/background-plugin": "file:./flowgram.ai/packages/plugins/background-plugin"
+  "@flowgram.ai/fixed-drag-plugin": "file:./flowgram.ai/packages/plugins/fixed-drag-plugin"
+  "@flowgram.ai/fixed-history-plugin": "file:./flowgram.ai/packages/plugins/fixed-history-plugin"
+  "@flowgram.ai/free-history-plugin": "file:./flowgram.ai/packages/plugins/free-history-plugin"
+  "@flowgram.ai/free-hover-plugin": "file:./flowgram.ai/packages/plugins/free-hover-plugin"
+  "@flowgram.ai/free-lines-plugin": "file:./flowgram.ai/packages/plugins/free-lines-plugin"
+  "@flowgram.ai/free-node-panel-plugin": "file:./flowgram.ai/packages/plugins/free-node-panel-plugin"
+  "@flowgram.ai/free-snap-plugin": "file:./flowgram.ai/packages/plugins/free-snap-plugin"
+  "@flowgram.ai/free-stack-plugin": "file:./flowgram.ai/packages/plugins/free-stack-plugin"
+  "@flowgram.ai/free-container-plugin": "file:./flowgram.ai/packages/plugins/free-container-plugin"
+  "@flowgram.ai/free-group-plugin": "file:./flowgram.ai/packages/plugins/free-group-plugin"
+  "@flowgram.ai/group-plugin": "file:./flowgram.ai/packages/plugins/group-plugin"
+  "@flowgram.ai/history-node-plugin": "file:./flowgram.ai/packages/plugins/history-node-plugin"
+  "@flowgram.ai/minimap-plugin": "file:./flowgram.ai/packages/plugins/minimap-plugin"
+  "@flowgram.ai/node-core-plugin": "file:./flowgram.ai/packages/plugins/node-core-plugin"
+  "@flowgram.ai/node-variable-plugin": "file:./flowgram.ai/packages/plugins/node-variable-plugin"
+  "@flowgram.ai/redux-devtool-plugin": "file:./flowgram.ai/packages/plugins/redux-devtool-plugin"
+  "@flowgram.ai/select-box-plugin": "file:./flowgram.ai/packages/plugins/select-box-plugin"
+  "@flowgram.ai/shortcuts-plugin": "file:./flowgram.ai/packages/plugins/shortcuts-plugin"
+  "@flowgram.ai/variable-plugin": "file:./flowgram.ai/packages/plugins/variable-plugin"
+  "@flowgram.ai/materials-plugin": "file:./flowgram.ai/packages/plugins/materials-plugin"
+  "@flowgram.ai/free-auto-layout-plugin": "file:./flowgram.ai/packages/plugins/free-auto-layout-plugin"
+  "@flowgram.ai/i18n-plugin": "file:./flowgram.ai/packages/plugins/i18n-plugin"
+  
+  # Material packages
+  "@flowgram.ai/fixed-semi-materials": "file:./flowgram.ai/packages/materials/fixed-semi-materials"
+  "@flowgram.ai/form-materials": "file:./flowgram.ai/packages/materials/form-materials"
+  "@flowgram.ai/form-antd-materials": "file:./flowgram.ai/packages/materials/form-antd-materials"
+  
+  # Runtime packages
+  "@flowgram.ai/runtime-interface": "file:./flowgram.ai/packages/runtime/interface"
+  "@flowgram.ai/runtime-js": "file:./flowgram.ai/packages/runtime/js-core"
+  "@flowgram.ai/runtime-nodejs": "file:./flowgram.ai/packages/runtime/nodejs"

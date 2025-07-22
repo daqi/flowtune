@@ -5,7 +5,7 @@
 
 import { useRef, useEffect } from 'react';
 
-import { Field, FieldRenderProps } from '@flowgram.ai/fixed-layout-editor';
+import { Field, FieldRenderProps } from '@flowgram.ai/free-layout-editor';
 import { Typography, Input } from '@douyinfe/semi-ui';
 
 import { Title } from './styles';

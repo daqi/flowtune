@@ -6,16 +6,20 @@
 import { FlowNodeRegistry } from '../../typings';
 import iconStart from '../../assets/icon-start.jpg';
 import { formMeta } from './form-meta';
+import { WorkflowNodeType } from '../constants';
 
 export const StartNodeRegistry: FlowNodeRegistry = {
-  type: 'start',
+  type: WorkflowNodeType.Start,
   meta: {
-    isStart: true, // Mark as start
-    deleteDisable: true, // Start node cannot delete
-    selectable: false, // Start node cannot select
-    copyDisable: true, // Start node cannot copy
-    expandable: false, // disable expanded
-    addDisable: true, // Start Node cannot be added
+    isStart: true,
+    deleteDisable: true,
+    copyDisable: true,
+    nodePanelVisible: false,
+    defaultPorts: [{ type: 'output' }],
+    size: {
+      width: 360,
+      height: 211,
+    },
   },
   info: {
     icon: iconStart,
@@ -26,4 +30,10 @@ export const StartNodeRegistry: FlowNodeRegistry = {
    * Render node via formMeta
    */
   formMeta,
+  /**
+   * Start Node cannot be added
+   */
+  canAdd() {
+    return false;
+  },
 };

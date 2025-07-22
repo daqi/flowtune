@@ -4,7 +4,7 @@
  */
 
 import { FlowMinimapService, MinimapRender } from '@flowgram.ai/minimap-plugin';
-import { useService } from '@flowgram.ai/fixed-layout-editor';
+import { useService } from '@flowgram.ai/free-layout-editor';
 
 import { MinimapContainer } from './styles';
 

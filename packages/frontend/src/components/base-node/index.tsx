@@ -3,13 +3,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 
-import { FlowNodeEntity, useNodeRender } from '@flowgram.ai/fixed-layout-editor';
+import { FlowNodeEntity, useNodeRender } from '@flowgram.ai/free-layout-editor';
 import { ConfigProvider } from '@douyinfe/semi-ui';
 
-import { NodeRenderContext, SidebarContext } from '../../context';
-import { BaseNodeStyle, ErrorIcon } from './styles';
+import { NodeStatusBar } from '../testrun/node-status-bar';
+import { NodeRenderContext } from '../../context';
+import { ErrorIcon } from './styles';
+import { NodeWrapper } from './node-wrapper';
 
 export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
   /**
@@ -29,42 +31,15 @@ export const BaseNode = ({ node }: { node: FlowNodeEntity }) => {
    */
   const getPopupContainer = useCallback(() => node.renderData.node || document.body, []);
 
-  /**
-   * Sidebar control
-   */
-  const sidebar = useContext(SidebarContext);
-
   return (
     <ConfigProvider getPopupContainer={getPopupContainer}>
-      {form?.state.invalid && <ErrorIcon />}
-      <BaseNodeStyle
-        /*
-         * onMouseEnter is added to a fixed layout node primarily to listen for hover highlighting of branch lines
-         * onMouseEnter 加到固定布局节点主要是为了监听 分支线条的 hover 高亮
-         **/
-        onMouseEnter={nodeRender.onMouseEnter}
-        onMouseLeave={nodeRender.onMouseLeave}
-        className={nodeRender.activated ? 'activated' : ''}
-        onClick={() => {
-          if (nodeRender.dragging) {
-            return;
-          }
-          sidebar.setNodeId(nodeRender.node.id);
-        }}
-        style={{
-          /**
-           * Lets you precisely control the style of branch nodes
-           * 用于精确控制分支节点的样式
-           * isBlockIcon: 整个 condition 分支的 头部节点
-           * isBlockOrderIcon: 分支的第一个节点
-           */
-          ...(nodeRender.isBlockOrderIcon || nodeRender.isBlockIcon ? {} : {}),
-          ...nodeRender.node.getNodeRegistry().meta.style,
-          outline: form?.state.invalid ? '1px solid red' : 'none',
-        }}
-      >
-        <NodeRenderContext.Provider value={nodeRender}>{form?.render()}</NodeRenderContext.Provider>
-      </BaseNodeStyle>
+      <NodeRenderContext.Provider value={nodeRender}>
+        <NodeWrapper>
+          {form?.state.invalid && <ErrorIcon />}
+          {form?.render()}
+        </NodeWrapper>
+        <NodeStatusBar />
+      </NodeRenderContext.Provider>
     </ConfigProvider>
   );
 };

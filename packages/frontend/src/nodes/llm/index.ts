@@ -5,25 +5,23 @@
 
 import { nanoid } from 'nanoid';
 
-import { defaultFormMeta } from '../default-form-meta';
-import { AgentLLMNodeRegistry } from '../agent/agent-llm';
+import { WorkflowNodeType } from '../constants';
 import { FlowNodeRegistry } from '../../typings';
 import iconLLM from '../../assets/icon-llm.jpg';
 
 let index = 0;
 export const LLMNodeRegistry: FlowNodeRegistry = {
-  type: 'llm',
+  type: WorkflowNodeType.LLM,
   info: {
     icon: iconLLM,
     description:
       'Call the large language model and use variables and prompt words to generate responses.',
   },
-  formMeta: defaultFormMeta,
   meta: {
-    draggable: (node) => node.parent?.flowNodeType !== AgentLLMNodeRegistry.type,
-  },
-  canDelete(ctx, node) {
-    return node.parent?.flowNodeType !== AgentLLMNodeRegistry.type;
+    size: {
+      width: 360,
+      height: 390,
+    },
   },
   onAdd() {
     return {
@@ -32,9 +30,17 @@ export const LLMNodeRegistry: FlowNodeRegistry = {
       data: {
         title: `LLM_${++index}`,
         inputsValues: {
-          modelType: {
+          modelName: {
             type: 'constant',
             content: 'gpt-3.5-turbo',
+          },
+          apiKey: {
+            type: 'constant',
+            content: 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+          },
+          apiHost: {
+            type: 'constant',
+            content: 'https://mock-ai-url/api/v3',
           },
           temperature: {
             type: 'constant',
@@ -51,9 +57,15 @@ export const LLMNodeRegistry: FlowNodeRegistry = {
         },
         inputs: {
           type: 'object',
-          required: ['modelType', 'temperature', 'prompt'],
+          required: ['modelName', 'apiKey', 'apiHost', 'temperature', 'prompt'],
           properties: {
-            modelType: {
+            modelName: {
+              type: 'string',
+            },
+            apiKey: {
+              type: 'string',
+            },
+            apiHost: {
               type: 'string',
             },
             temperature: {
@@ -61,11 +73,15 @@ export const LLMNodeRegistry: FlowNodeRegistry = {
             },
             systemPrompt: {
               type: 'string',
-              extra: { formComponent: 'prompt-editor' },
+              extra: {
+                formComponent: 'prompt-editor',
+              },
             },
             prompt: {
               type: 'string',
-              extra: { formComponent: 'prompt-editor' },
+              extra: {
+                formComponent: 'prompt-editor',
+              },
             },
           },
         },

@@ -3,33 +3,32 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { type FlowNodeRegistry } from '../typings';
-import { TryCatchNodeRegistry } from './trycatch';
-import { SwitchNodeRegistry } from './switch';
+import { FlowNodeRegistry } from '../typings';
 import { StartNodeRegistry } from './start';
 import { LoopNodeRegistry } from './loop';
 import { LLMNodeRegistry } from './llm';
-import { IFBlockNodeRegistry } from './if-block';
-import { IFNodeRegistry } from './if';
+import { HTTPNodeRegistry } from './http';
 import { EndNodeRegistry } from './end';
-import { CatchBlockNodeRegistry } from './catch-block';
-import { CaseDefaultNodeRegistry } from './case-default';
-import { CaseNodeRegistry } from './case';
-import { BreakLoopNodeRegistry } from './break-loop';
-import { AgentNodeRegistries } from './agent';
+import { ContinueNodeRegistry } from './continue';
+import { ConditionNodeRegistry } from './condition';
+import { CommentNodeRegistry } from './comment';
+import { CodeNodeRegistry } from './code';
+import { BreakNodeRegistry } from './break';
+import { BlockStartNodeRegistry } from './block-start';
+import { BlockEndNodeRegistry } from './block-end';
+export { WorkflowNodeType } from './constants';
 
-export const FlowNodeRegistries: FlowNodeRegistry[] = [
+export const nodeRegistries: FlowNodeRegistry[] = [
+  ConditionNodeRegistry,
   StartNodeRegistry,
   EndNodeRegistry,
-  SwitchNodeRegistry,
   LLMNodeRegistry,
   LoopNodeRegistry,
-  CaseNodeRegistry,
-  TryCatchNodeRegistry,
-  CatchBlockNodeRegistry,
-  IFNodeRegistry,
-  IFBlockNodeRegistry,
-  BreakLoopNodeRegistry,
-  CaseDefaultNodeRegistry,
-  ...AgentNodeRegistries,
+  CommentNodeRegistry,
+  BlockStartNodeRegistry,
+  BlockEndNodeRegistry,
+  HTTPNodeRegistry,
+  CodeNodeRegistry,
+  ContinueNodeRegistry,
+  BreakNodeRegistry,
 ];

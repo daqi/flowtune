@@ -5,6 +5,8 @@
 
 import styled from 'styled-components';
 
+import { IconMinimap } from '../../assets/icon-minimap';
+
 export const ToolContainer = styled.div`
   position: absolute;
   bottom: 16px;
@@ -31,15 +33,20 @@ export const ToolSection = styled.div`
 `;
 
 export const SelectZoom = styled.span`
-  padding: 2px;
+  padding: 4px;
   border-radius: 8px;
   border: 1px solid rgba(68, 83, 130, 0.25);
   font-size: 12px;
-  width: 40px;
+  width: 50px;
+  cursor: pointer;
 `;
 
 export const MinimapContainer = styled.div`
   position: absolute;
   bottom: 60px;
   width: 198px;
+`;
+
+export const UIIconMinimap = styled(IconMinimap)<{ visible: boolean }>`
+  color: ${(props) => (props.visible ? undefined : '#060709cc')};
 `;

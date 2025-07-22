@@ -9,7 +9,7 @@ import {
   PlaygroundEntityContext,
   useRefresh,
   useClientContext,
-} from '@flowgram.ai/fixed-layout-editor';
+} from '@flowgram.ai/free-layout-editor';
 import { SideSheet } from '@douyinfe/semi-ui';
 
 import { FlowNodeMeta } from '../../typings';
@@ -68,8 +68,8 @@ export const SidebarRenderer = () => {
     if (!node) {
       return false;
     }
-    const { sidebarDisable = false } = node.getNodeMeta<FlowNodeMeta>();
-    return !sidebarDisable;
+    const { sidebarDisabled = false } = node.getNodeMeta<FlowNodeMeta>();
+    return !sidebarDisabled;
   }, [node]);
 
   if (playground.config.readonly) {
@@ -91,7 +91,8 @@ export const SidebarRenderer = () => {
       visible={visible}
       onCancel={handleClose}
       closable={false}
-      width={360}
+      motion={false}
+      width={500}
       headerStyle={{
         display: 'none',
       }}
