@@ -1,39 +1,51 @@
 {
-  "name": "flowtune",
+  "name": "@flowtune/desktop",
   "version": "1.0.0",
-  "description": "FlowTune - 流韵",
-  "main": "index.js",
-  "private": true,
-  "scripts": {
-    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
-    "dev:backend": "pnpm --filter @flowtune/backend dev",
-    "dev:frontend": "pnpm --filter @flowtune/frontend dev",
-    "dev:desktop": "pnpm --filter @flowtune/desktop dev",
-    "build": "pnpm --recursive build",
-    "build:backend": "pnpm --filter @flowtune/backend build",
-    "build:frontend": "pnpm --filter @flowtune/frontend build",
-    "build:desktop": "pnpm --filter @flowtune/desktop build",
-    "start": "pnpm --filter @flowtune/backend start",
-    "test": "pnpm --recursive test",
-    "lint": "pnpm --recursive lint",
-    "type-check": "pnpm --recursive type-check",
-    "install:all": "pnpm install",
-    "build:flowgram.ai": "git submodule update --init --recursive && cd flowgram.ai && rush install && rush build"
-  },
-  "keywords": [
-    "hono",
-    "drizzle",
-    "react",
-    "electron",
-    "flowgram",
-    "typescript",
-    "fullstack"
-  ],
-  "author": "",
+  "description": "My Electron application description",
+  "keywords": [],
   "license": "MIT",
+  "author": {
+    "name": "daqi",
+    "email": "daqidaqi@qq.com"
+  },
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "build:backend": "pnpm --filter @flowtune/backend build",
+    "build:frontend": "pnpm --filter @flowtune/frontend build && rm -rf ./public/frontend/ && cp -R ./packages/frontend/dist/ public/frontend/",
+    "build:app": "electron-forge make",
+    "build:all": "npm run build:backend && npm run build:frontend && npm run build:app",
+    "package": "electron-forge package",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
+  },
   "devDependencies": {
-    "@types/node": "^24.0.15",
-    "concurrently": "^8.2.2",
-    "typescript": "^5.8.3"
-  }
+    "@electron-forge/cli": "^7.8.2",
+    "@electron-forge/maker-deb": "^7.8.2",
+    "@electron-forge/maker-rpm": "^7.8.2",
+    "@electron-forge/maker-squirrel": "^7.8.2",
+    "@electron-forge/maker-zip": "^7.8.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.2",
+    "@electron-forge/plugin-fuses": "^7.8.2",
+    "@electron-forge/plugin-vite": "^7.8.2",
+    "@electron/fuses": "^2.0.0",
+    "@types/electron-squirrel-startup": "^1.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "electron": "^37.2.5",
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.32.0",
+    "typescript": "~4.5.5",
+    "vite": "^5.4.19"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "electron-winstaller"
+    ]
+  },
+  "productName": "flowtune"
 }
