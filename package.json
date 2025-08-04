@@ -10,45 +10,22 @@
   },
   "main": ".vite/build/main.js",
   "scripts": {
-    "start": "electron-forge start",
-    "update:all": "git submodule update --init --recursive && npm run update:fe && npm run update:be && pnpm i",
-    "update:fe": "rm -rf ./packages/frontend/src/ && cp -R ./flowgram.ai/apps/demo-free-layout/src/ ./packages/frontend/src/ && git apply ./patch/frontend.patch",
-    "update:be": "rm -rf ./packages/backend/src/ && cp -R ./flowgram.ai/packages/runtime/nodejs/src/ ./packages/backend/src/ && git apply ./patch/backend.patch",
-    "build:backend": "pnpm --filter @flowtune/backend build",
-    "build:frontend": "pnpm --filter @flowtune/frontend build",
-    "build:app": "electron-forge make",
-    "build:all": "npm run build:backend && npm run build:frontend && npm run build:app",
-    "package": "electron-forge package",
-    "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
-  },
-  "dependencies": {
-    "electron-squirrel-startup": "^1.0.1"
+    "build:all": "npm run update:all && npm run build:app",
+    "build:app": "electron-builder",
+    "lint": "eslint --ext .ts,.tsx .",
+    "publish": "electron-builder publish",
+    "start": "electron-builder start",
+    "update:all": "node scripts/update-submodules.js"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.8.2",
-    "@electron-forge/maker-deb": "^7.8.2",
-    "@electron-forge/maker-rpm": "^7.8.2",
-    "@electron-forge/maker-squirrel": "^7.8.2",
-    "@electron-forge/maker-zip": "^7.8.2",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.8.2",
-    "@electron-forge/plugin-fuses": "^7.8.2",
-    "@electron-forge/plugin-vite": "^7.8.2",
-    "@electron/fuses": "^2.0.0",
-    "@types/electron-squirrel-startup": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "electron": "^37.2.5",
+    "electron-builder": "^26.0.12",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.32.0",
-    "typescript": "~4.5.5",
-    "vite": "^5.4.19"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "electron",
-      "electron-winstaller"
-    ]
+    "fs-extra": "^11.3.0",
+    "typescript": "~4.5.5"
   },
   "productName": "flowtune"
 }

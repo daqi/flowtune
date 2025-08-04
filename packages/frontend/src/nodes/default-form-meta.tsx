@@ -11,6 +11,7 @@ import {
   DisplayOutputs,
   validateFlowValue,
   validateWhenVariableSync,
+  listenRefSchemaChange,
 } from '@flowgram.ai/form-materials';
 import { Divider } from '@douyinfe/semi-ui';
 
@@ -69,5 +70,8 @@ export const defaultFormMeta: FormMeta<FlowNodeJSON> = {
     title: syncVariableTitle,
     outputs: provideJsonSchemaOutputs,
     inputsValues: [...autoRenameRefEffect, ...validateWhenVariableSync({ scope: 'public' })],
+    'inputsValues.*': listenRefSchemaChange((params) => {
+      console.log(`[${params.context.node.id}][${params.name}] Schema Of Ref Updated`);
+    }),
   },
 };
