@@ -1,0 +1,25 @@
+diff --git a/packages/frontend/src/hooks/use-editor-props.tsx b/packages/frontend/src/hooks/use-editor-props.tsx
+index 2cb4eab..ca221dc 100644
+--- a/packages/frontend/src/hooks/use-editor-props.tsx
++++ b/packages/frontend/src/hooks/use-editor-props.tsx
+@@ -331,13 +331,13 @@ export function useEditorProps(
+          */
+         createContextMenuPlugin({}),
+         createRuntimePlugin({
+-          mode: 'browser',
+-          // mode: 'server',
+-          // serverConfig: {
+-          //   domain: 'localhost',
+-          //   port: 4000,
+-          //   protocol: 'http',
+-          // },
++          // mode: 'browser',
++          mode: 'server',
++          serverConfig: {
++            domain: 'localhost',
++            port: 4000,
++            protocol: 'http',
++          },
+         }),
+ 
+         /**

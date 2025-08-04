@@ -12,8 +12,8 @@
   "scripts": {
     "start": "electron-forge start",
     "update:all": "git submodule update --init --recursive && npm run update:fe && npm run update:be && pnpm i",
-    "update:fe": "rm -rf ./packages/frontend/src/ && cp -R ./flowgram.ai/apps/demo-free-layout/src/ ./packages/frontend/src/",
-    "update:be": "rm -rf ./packages/backend/src/ && cp -R ./flowgram.ai/packages/runtime/nodejs/src/ ./packages/backend/src/",
+    "update:fe": "rm -rf ./packages/frontend/src/ && cp -R ./flowgram.ai/apps/demo-free-layout/src/ ./packages/frontend/src/ && git apply ./patch/frontend.patch",
+    "update:be": "rm -rf ./packages/backend/src/ && cp -R ./flowgram.ai/packages/runtime/nodejs/src/ ./packages/backend/src/ && git apply ./patch/backend.patch",
     "build:backend": "pnpm --filter @flowtune/backend build",
     "build:frontend": "pnpm --filter @flowtune/frontend build",
     "build:app": "electron-forge make",
