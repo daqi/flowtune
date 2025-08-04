@@ -11,7 +11,11 @@ import { createMinimapPlugin } from '@flowgram.ai/minimap-plugin';
 import { createFreeSnapPlugin } from '@flowgram.ai/free-snap-plugin';
 import { createFreeNodePanelPlugin } from '@flowgram.ai/free-node-panel-plugin';
 import { createFreeLinesPlugin } from '@flowgram.ai/free-lines-plugin';
-import { FreeLayoutProps, WorkflowNodeLinesData } from '@flowgram.ai/free-layout-editor';
+import {
+  FlowNodeBaseType,
+  FreeLayoutProps,
+  WorkflowNodeLinesData,
+} from '@flowgram.ai/free-layout-editor';
 import { createFreeGroupPlugin } from '@flowgram.ai/free-group-plugin';
 import { createContainerNodePlugin } from '@flowgram.ai/free-container-plugin';
 
@@ -103,10 +107,12 @@ export function useEditorProps(
         if (fromPort.node === toPort.node) {
           return false;
         }
-        // Cannot be in different loop containers - 不能在不同 Loop 容器
+        // Cannot be in different containers - 不能在不同容器
         if (
-          toPort.node.parent?.flowNodeType === WorkflowNodeType.Loop &&
-          fromPort.node.parent?.id !== toPort.node.parent?.id
+          fromPort.node.parent?.id !== toPort.node.parent?.id &&
+          ![fromPort.node.parent?.flowNodeType, toPort.node.parent?.flowNodeType].includes(
+            FlowNodeBaseType.GROUP
+          )
         ) {
           return false;
         }

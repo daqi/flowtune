@@ -5,9 +5,8 @@
 
 import { FormMeta, FormRenderProps } from '@flowgram.ai/free-layout-editor';
 import { createInferInputsPlugin } from '@flowgram.ai/form-materials';
-import { Divider } from '@douyinfe/semi-ui';
 
-import { FormHeader, FormContent, FormOutputs } from '../../form-components';
+import { FormHeader, FormContent } from '../../form-components';
 import { CodeNodeJSON } from './types';
 import { Outputs } from './components/outputs';
 import { Inputs } from './components/inputs';
@@ -21,7 +20,6 @@ export const FormRender = ({ form }: FormRenderProps<CodeNodeJSON>) => (
       <Inputs />
       <Code />
       <Outputs />
-      <FormOutputs />
     </FormContent>
   </>
 );
@@ -29,5 +27,6 @@ export const FormRender = ({ form }: FormRenderProps<CodeNodeJSON>) => (
 export const formMeta: FormMeta = {
   render: (props) => <FormRender {...props} />,
   effect: defaultFormMeta.effect,
+  validate: defaultFormMeta.validate,
   plugins: [createInferInputsPlugin({ sourceKey: 'inputsValues', targetKey: 'inputs' })],
 };

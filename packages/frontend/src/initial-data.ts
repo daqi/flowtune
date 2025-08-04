@@ -97,13 +97,9 @@ export const initialData: FlowDocumentJSON = {
       },
       data: {
         title: 'End',
-        inputs: {
-          type: 'object',
-          properties: {
-            result: {
-              type: 'string',
-            },
-          },
+        inputsValues: {
+          success: { type: 'constant', content: true, schema: { type: 'boolean' } },
+          query: { type: 'ref', content: ['start_0', 'query'] },
         },
       },
     },
@@ -176,6 +172,16 @@ export const initialData: FlowDocumentJSON = {
       },
       data: {
         title: 'Loop_1',
+        loopFor: {
+          type: 'ref',
+          content: ['start_0', 'array_obj'],
+        },
+        loopOutputs: {
+          acm: {
+            type: 'ref',
+            content: ['llm_6aSyo', 'result'],
+          },
+        },
       },
       blocks: [
         {
