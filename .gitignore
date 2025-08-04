@@ -153,3 +153,5 @@ storybook-static/
 .netlify
 
 .vite
+
+public/
