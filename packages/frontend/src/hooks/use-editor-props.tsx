@@ -331,13 +331,13 @@ export function useEditorProps(
          */
         createContextMenuPlugin({}),
         createRuntimePlugin({
-          // mode: 'browser',
-          mode: 'server',
-          serverConfig: {
-            domain: 'localhost',
-            port: 4000,
-            protocol: 'http',
-          },
+          mode: 'browser',
+          // mode: 'server',
+          // serverConfig: {
+          //   domain: 'localhost',
+          //   port: 4000,
+          //   protocol: 'http',
+          // },
         }),
 
         /**

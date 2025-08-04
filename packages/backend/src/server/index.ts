@@ -8,13 +8,13 @@ import fastify from 'fastify';
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
 import { ServerInfoDefine, type ServerInfoOutput } from '@flowgram.ai/runtime-interface';
 import ws from '@fastify/websocket';
-// import fastifySwaggerUI from '@fastify/swagger-ui';
-// import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUI from '@fastify/swagger-ui';
+import fastifySwagger from '@fastify/swagger';
 import cors from '@fastify/cors';
 
 import { ServerConfig } from '@config/index';
 import { appRouter } from '@api/index';
-// import { serverDocument } from './docs';
+import { serverDocument } from './docs';
 import { createContext } from './context';
 
 export async function createServer() {
@@ -33,32 +33,32 @@ export async function createServer() {
     createContext,
   } as any);
 
-  // await server.register(fastifySwagger, {
-  //   mode: 'static',
-  //   specification: { document: serverDocument },
-  //   uiConfig: { displayOperationId: true },
-  //   exposeRoute: true,
-  // } as any);
+  await server.register(fastifySwagger, {
+    mode: 'static',
+    specification: { document: serverDocument },
+    uiConfig: { displayOperationId: true },
+    exposeRoute: true,
+  } as any);
 
-  // await server.register(fastifySwaggerUI, {
-  //   routePrefix: ServerConfig.docsPath,
-  //   uiConfig: {
-  //     docExpansion: 'full',
-  //     deepLinking: false,
-  //   },
-  //   uiHooks: {
-  //     onRequest: function (request, reply, next) {
-  //       next();
-  //     },
-  //     preHandler: function (request, reply, next) {
-  //       next();
-  //     },
-  //   },
-  //   staticCSP: true,
-  //   transformStaticCSP: (header) => header,
-  //   transformSpecification: (swaggerObject, request, reply) => swaggerObject,
-  //   transformSpecificationClone: true,
-  // });
+  await server.register(fastifySwaggerUI, {
+    routePrefix: ServerConfig.docsPath,
+    uiConfig: {
+      docExpansion: 'full',
+      deepLinking: false,
+    },
+    uiHooks: {
+      onRequest: function (request, reply, next) {
+        next();
+      },
+      preHandler: function (request, reply, next) {
+        next();
+      },
+    },
+    staticCSP: true,
+    transformStaticCSP: (header) => header,
+    transformSpecification: (swaggerObject, request, reply) => swaggerObject,
+    transformSpecificationClone: true,
+  });
 
   server.get(ServerInfoDefine.path, async (): Promise<ServerInfoOutput> => {
     const serverTime = new Date();
@@ -80,7 +80,7 @@ export async function createServer() {
     try {
       const address = await server.listen({ port: ServerConfig.port });
       await server.ready();
-      // server.swagger();
+      server.swagger();
       console.log(
         `> Listen Port: ${ServerConfig.port}\n> Server Address: ${address}\n> API Docs: http://localhost:4000/docs`
       );
