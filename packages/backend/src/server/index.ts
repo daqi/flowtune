@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-// import { fastifyTRPCOpenApiPlugin } from 'trpc-openapi';
+import { fastifyTRPCOpenApiPlugin } from 'trpc-openapi';
 import fastify from 'fastify';
-// import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
+import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
 import { ServerInfoDefine, type ServerInfoOutput } from '@flowgram.ai/runtime-interface';
 import ws from '@fastify/websocket';
 // import fastifySwaggerUI from '@fastify/swagger-ui';
@@ -13,25 +13,25 @@ import ws from '@fastify/websocket';
 import cors from '@fastify/cors';
 
 import { ServerConfig } from '@config/index';
-// import { appRouter } from '@api/index';
+import { appRouter } from '@api/index';
 // import { serverDocument } from './docs';
-// import { createContext } from './context';
+import { createContext } from './context';
 
 export async function createServer() {
   const server = fastify({ logger: ServerConfig.dev });
 
   await server.register(cors);
   await server.register(ws);
-  // await server.register(fastifyTRPCPlugin, {
-  //   prefix: '/trpc',
-  //   useWss: false,
-  //   trpcOptions: { router: appRouter, createContext },
-  // });
-  // await server.register(fastifyTRPCOpenApiPlugin, {
-  //   basePath: ServerConfig.basePath,
-  //   router: appRouter,
-  //   createContext,
-  // } as any);
+  await server.register(fastifyTRPCPlugin, {
+    prefix: '/trpc',
+    useWss: false,
+    trpcOptions: { router: appRouter, createContext },
+  });
+  await server.register(fastifyTRPCOpenApiPlugin, {
+    basePath: ServerConfig.basePath,
+    router: appRouter,
+    createContext,
+  } as any);
 
   // await server.register(fastifySwagger, {
   //   mode: 'static',
