@@ -15,6 +15,7 @@
     "build:preload": "vite build --config vite.preload.config.ts",
     "dev": "electron .",
     "make": "electron-builder --config electron-builder.config.ts",
+    "aio": "npm run update-submodules && npm run prepare && npm run build:all && npm run make",
     "lint": "eslint --ext .ts,.tsx .",
     "publish": "electron-builder publish",
     "start": "electron-builder start",
