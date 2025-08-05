@@ -43,11 +43,6 @@ async function updateAndBuild() {
       './patch/backend.patch',
       'Applying backend patches'
     );
-
-    applyPatch(
-      './patch/backend2.patch',
-      'Applying backend patches'
-    );
     
     // Step 4: Install dependencies
     executeCommand(
