@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,13 +9,9 @@ export default defineConfig({
       babel: {
         plugins: [
           ["@babel/plugin-proposal-decorators", { legacy: true }],
-          ["@babel/plugin-transform-class-properties", { spec: true }]
+          ["@babel/plugin-transform-class-properties", { spec: true }],
         ],
       },
     }),
   ],
-  build: {
-    emptyOutDir: true,
-    outDir: path.join(__dirname, "../../public/frontend"),
-  }
 });

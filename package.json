@@ -8,24 +8,33 @@
     "name": "daqi",
     "email": "daqidaqi@qq.com"
   },
-  "main": ".vite/build/main.js",
+  "main": "build/main.js",
   "scripts": {
-    "build:all": "npm run update:all && npm run build:app",
-    "build:app": "electron-builder",
+    "build:all": "npm run build:main && npm run build:preload",
+    "build:main": "vite build --config vite.main.config.ts",
+    "build:preload": "vite build --config vite.preload.config.ts",
+    "dev": "electron .",
+    "make": "electron-builder --config electron-builder.config.ts",
     "lint": "eslint --ext .ts,.tsx .",
     "publish": "electron-builder publish",
     "start": "electron-builder start",
-    "update:all": "node scripts/update-submodules.js"
+    "prepare": "tsx scripts/prepare.ts",
+    "postinstall": "electron-builder install-app-deps",
+    "update-submodules": "tsx scripts/update-submodules.ts",
+    "icon": "electron-icon-builder --input=$(pwd)/assets/icon.png --output=./assets"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "electron": "^37.2.5",
-    "electron-builder": "^26.0.12",
+    "electron-builder": "26.0.19",
+    "electron-icon-builder": "^2.0.1",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.32.0",
     "fs-extra": "^11.3.0",
-    "typescript": "~4.5.5"
+    "typescript": "~4.5.5",
+    "tsx": "~4.19.4",
+    "vite": "^7.0.6"
   },
   "productName": "flowtune"
 }

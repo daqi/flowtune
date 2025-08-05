@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "commonjs",
+    "module": "es2022",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -12,5 +12,5 @@
     "moduleResolution": "node",
     "resolveJsonModule": true
   },
-  "include": ["*.ts", "src/**/*.ts", "src/**/*.tsx"]
+  "include": ["*.ts", "src/**/*.ts", "src/**/*.tsx", "vite.main.config.ts", "electron-builder.config.ts"]
 }

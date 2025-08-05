@@ -1,6 +1,11 @@
 import path from "node:path";
 import { BrowserWindow, app } from "electron";
+import { fileURLToPath } from 'url';
 import '../packages/backend/dist/index.js';
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const createWindow = () => {
     // Create the browser window.
@@ -14,11 +19,9 @@ const createWindow = () => {
 
     // and load the index.html of the app.
     if (process.env.NODE_ENV === "development") {
-        // mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-        mainWindow.loadFile(path.join(__dirname, `../../public/frontend/index.html`));
+        mainWindow.loadFile(path.join(__dirname, `../packages/frontend/dist/index.html`));
     } else {
-        // mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
-        mainWindow.loadFile(path.join(__dirname, `../renderer/frontend/index.html`));
+        mainWindow.loadFile(path.join(__dirname, `./frontend/index.html`));
     }
 
     // Open the DevTools.
