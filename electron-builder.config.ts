@@ -65,11 +65,11 @@ const options: Configuration = {
       "${productName}_mac_${arch}_${version}(${buildVersion}).${ext}",
   },
   win: {
-    icon: "assets/icon.ico",
+    // icon: "assets/icon.ico",
     //requestedExecutionLevel: 'requireAdministrator'
   },
   nsis: {
-    installerIcon: "assets/installer-icon.ico",
+    // installerIcon: "assets/installer-icon.ico",
     oneClick: false,
     allowToChangeInstallationDirectory: true,
     deleteAppDataOnUninstall: false,
