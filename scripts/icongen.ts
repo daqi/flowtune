@@ -8,7 +8,7 @@ const basePath = join(__dirname, "../assets/icons");
 async function main() {
   // Generate Windows icon (.ico)
   await icongen(
-    join(basePath, "icon-win.png"),
+    join(basePath, "icon-win.svg"),
     join(basePath),
     {
       ico: { name: "icon" },
@@ -17,7 +17,7 @@ async function main() {
   );
   // Generate macOS icon (.icns)
   await icongen(
-    join(basePath, "icon-mac.png"),
+    join(basePath, "icon-mac.svg"),
     join(basePath),
     {
       icns: { name: "icon" },
@@ -32,7 +32,7 @@ async function main() {
   removeSync(outputPath);
   ensureDirSync(tmpPath);
   await icongen(
-    join(basePath, "icon-win.png"),
+    join(basePath, "icon-win.svg"),
     tmpPath,
     {
       favicon: { name: prefix, pngSizes: linuxIconSizes, icoSizes: [] },
