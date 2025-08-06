@@ -24,16 +24,21 @@ function prepare() {
     console.log("process.platform:", process.platform);
     if (process.platform === "darwin") {
       copyDirectory(
-        "./assets/icons/mac/icon.icns",
+        "./assets/icons/icon.icns",
         "./build/icon.icns",
         "Copying mac icons to build directory"
       );
-    }
-    if (process.platform === "win32") {
+    } else if (process.platform === "win32") {
       copyDirectory(
-        "./assets/icons/win/icon.ico",
+        "./assets/icons/icon.ico",
         "./build/icon.ico",
         "Copying windows icons to build directory"
+      );
+    } else {
+      copyDirectory(
+        "./assets/icons/icons/",
+        "./build/icons/",
+        "Copying linux icons to build directory"
       );
     }
     console.log("✅ Icons copied successfully");

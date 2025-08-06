@@ -22,17 +22,17 @@
     "prepared": "tsx scripts/prepare.ts",
     "postinstall": "electron-builder install-app-deps",
     "update-submodules": "tsx scripts/update-submodules.ts",
-    "icon": "electron-icon-builder --input=$(pwd)/assets/icon.png --output=./assets"
+    "icongen": "tsx scripts/icongen.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "electron": "^37.2.5",
     "electron-builder": "26.0.19",
-    "electron-icon-builder": "^2.0.1",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.32.0",
     "fs-extra": "^11.3.0",
+    "icon-gen": "^5.0.0",
     "typescript": "~4.5.5",
     "tsx": "~4.19.4",
     "vite": "^7.0.6"
