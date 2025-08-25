@@ -11,7 +11,6 @@ import {
   createBatchOutputsFormPlugin,
   DisplayOutputs,
   IFlowRefValue,
-  IJsonSchema,
   provideBatchInputEffect,
 } from '@flowgram.ai/form-materials';
 

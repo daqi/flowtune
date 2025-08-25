@@ -9,6 +9,7 @@ import { StartNodeRegistry } from './start';
 import { LoopNodeRegistry } from './loop';
 import { LLMNodeRegistry } from './llm';
 import { HTTPNodeRegistry } from './http';
+import { GroupNodeRegistry } from './group';
 import { EndNodeRegistry } from './end';
 import { ContinueNodeRegistry } from './continue';
 import { ConditionNodeRegistry } from './condition';
@@ -33,4 +34,5 @@ export const nodeRegistries: FlowNodeRegistry[] = [
   ContinueNodeRegistry,
   BreakNodeRegistry,
   VariableNodeRegistry,
+  GroupNodeRegistry,
 ];

@@ -45,6 +45,17 @@ export function useEditorProps(
        */
       background: true,
       /**
+       * 画布相关配置
+       * Canvas-related configurations
+       */
+      playground: {
+        /**
+         * Prevent Mac browser gestures from turning pages
+         * 阻止 mac 浏览器手势翻页
+         */
+        preventGlobalGesture: true,
+      },
+      /**
        * Whether it is read-only or not, the node cannot be dragged in read-only mode
        */
       readonly: false,
@@ -136,6 +147,10 @@ export function useEditorProps(
       canDeleteNode(ctx, node) {
         return true;
       },
+      /**
+       * 是否允许拖入子画布 (loop or group)
+       * Whether to allow dragging into the sub-canvas (loop or group)
+       */
       canDropToNode: (ctx, params) => {
         const { dragNodeType, dropNodeType } = params;
         /**
@@ -164,11 +179,19 @@ export function useEditorProps(
         ) {
           return false;
         }
+        /**
+         * 循环节点无法嵌套循环节点
+         * Loop node cannot nest loop node
+         */
+        if (dragNodeType === WorkflowNodeType.Loop && dropNodeType === WorkflowNodeType.Loop) {
+          return false;
+        }
         return true;
       },
       /**
        * Drag the end of the line to create an add panel (feature optional)
        * 拖拽线条结束需要创建一个添加面板 （功能可选）
+       * 希望提供控制线条粗细的配置项
        */
       onDragLineEnd,
       /**
@@ -185,6 +208,7 @@ export function useEditorProps(
         enableScrollLimit: false,
       },
       materials: {
+        components: {},
         /**
          * Render Node
          */
@@ -216,13 +240,13 @@ export function useEditorProps(
        * Content change
        */
       onContentChange: debounce((ctx, event) => {
+        if (ctx.document.disposed) return;
         console.log('Auto Save: ', event, ctx.document.toJSON());
       }, 1000),
       /**
        * Running line
        */
       isFlowingLine: (ctx, line) => ctx.get(WorkflowRuntimeService).isFlowingLine(line),
-
       /**
        * Shortcuts
        */
@@ -236,7 +260,7 @@ export function useEditorProps(
       /**
        * Playground init
        */
-      onInit() {
+      onInit(ctx) {
         console.log('--- Playground init ---');
       },
       /**
@@ -244,7 +268,7 @@ export function useEditorProps(
        */
       onAllLayersRendered(ctx) {
         // ctx.tools.autoLayout(); // init auto layout
-        ctx.document.fitView(false); // init fit view
+        ctx.tools.fitView(false);
         console.log('--- Playground rendered ---');
       },
       /**
@@ -330,14 +354,17 @@ export function useEditorProps(
          * ContextMenu plugin
          */
         createContextMenuPlugin({}),
+        /**
+         * Runtime plugin
+         */
         createRuntimePlugin({
-          // mode: 'browser',
-          mode: 'server',
-          serverConfig: {
-            domain: 'localhost',
-            port: 4000,
-            protocol: 'http',
-          },
+          mode: 'browser',
+          // mode: 'server',
+          // serverConfig: {
+          //   domain: 'localhost',
+          //   port: 4000,
+          //   protocol: 'http',
+          // },
         }),
 
         /**
